@@ -29,23 +29,42 @@ export default function LoginPage() {
     if (!LIFF_ENABLED) return;
     (async () => {
       try {
+        console.log("[liff] initializing...");
         const liff = await initLiff();
-        if (!liff) return;
+        if (!liff) {
+          console.warn("[liff] initLiff() returned null — NEXT_PUBLIC_LIFF_ID missing at build time?");
+          return;
+        }
+        console.log("[liff] init ok. isLoggedIn:", liff.isLoggedIn());
         if (!liff.isLoggedIn()) {
-          liff.login();
+          // Explicit redirectUri (stripped of any query string) so repeated login attempts
+          // don't accumulate/conflict with leftover LINE auth params (code=, state=, liff.state=)
+          // from a previous round-trip, which otherwise corrupts the next attempt silently.
+          const cleanRedirectUri = `${window.location.origin}${window.location.pathname}`;
+          console.log("[liff] not logged in, redirecting to LINE login. redirectUri:", cleanRedirectUri);
+          liff.login({ redirectUri: cleanRedirectUri });
           return;
         }
         const [profile, idToken] = await Promise.all([liff.getProfile(), Promise.resolve(liff.getIDToken())]);
+        console.log("[liff] profile:", profile, "idToken present:", Boolean(idToken));
         if (!idToken) throw new Error("IDトークンを取得できませんでした。");
         await api.post("/api/auth/liff-login", {
           idToken,
           displayName: profile.displayName,
           pictureUrl: profile.pictureUrl,
         });
+        console.log("[liff] liff-login API call succeeded");
         await refresh();
         router.replace("/");
       } catch (err) {
-        setError(err instanceof ApiError ? err.message : "LINEログインに失敗しました。");
+        console.error("[liff] login flow failed:", err);
+        const message =
+          err instanceof ApiError
+            ? err.message
+            : err instanceof Error
+              ? `LINEログインに失敗しました。(${err.message})`
+              : "LINEログインに失敗しました。";
+        setError(message);
       } finally {
         setCheckingLiff(false);
       }
@@ -81,7 +100,11 @@ export default function LoginPage() {
       {error && <p className="mb-4 text-center text-xs font-bold text-danger">{error}</p>}
 
       {LIFF_ENABLED ? (
-        <button type="button" onClick={() => window.location.reload()} className={clsx(btnLine, "w-full")}>
+        <button
+          type="button"
+          onClick={() => window.location.assign(`${window.location.origin}${window.location.pathname}`)}
+          className={clsx(btnLine, "w-full")}
+        >
           LINEでログイン
         </button>
       ) : (
