@@ -1,0 +1,31 @@
+{
+  "name": "nesicle-beta",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,liff,admin -c blue,green,magenta \"npm run dev -w apps/api\" \"npm run dev -w apps/liff\" \"npm run dev -w apps/admin\"",
+    "build": "npm run build -w packages/shared && npm run build -w apps/api && npm run build -w apps/liff && npm run build -w apps/admin",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "npm run db:migrate -w packages/db",
+    "db:seed": "npm run db:seed -w packages/db",
+    "db:studio": "npm run db:studio -w packages/db"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "allowScripts": {
+    "@prisma/client@5.22.0": true,
+    "@prisma/engines@5.22.0": true,
+    "esbuild@0.28.2": true,
+    "prisma@5.22.0": true
+  }
+}

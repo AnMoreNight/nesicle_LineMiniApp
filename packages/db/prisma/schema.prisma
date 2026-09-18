@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CaseStatus {
+  DRAFT
+  PUBLISHED
+  SUSPENDED
+}
+
+enum ProgressStatus {
+  APPLIED
+  INTERVIEWING
+  CONTRACTED
+  INELIGIBLE
+}
+
+enum RewardStatus {
+  UNCONFIRMED
+  CONFIRMED
+  PAID
+}
+
+enum ConsentSubjectType {
+  REFERRER
+  APPLICANT
+}
+
+enum ConsentDocumentType {
+  TERMS
+  PRIVACY
+}
+
+enum BankAccountType {
+  ORDINARY
+  CHECKING
+}
+
+/// LINEユーザー情報 (紹介者としてログインした人物)
+model User {
+  id          String   @id @default(cuid())
+  lineUserId  String   @unique
+  displayName String
+  pictureUrl  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  referrerProfile ReferrerProfile?
+  referralLinks   ReferralLink[]
+
+  @@map("users")
+}
+
+/// 紹介者プロフィール
+model ReferrerProfile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  fullName   String   @default("")
+  phone      String   @default("")
+  email      String   @default("")
+  postalCode String   @default("")
+  address    String   @default("")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bankAccount BankAccount?
+
+  @@map("referrer_profiles")
+}
+
+/// 振込先情報
+model BankAccount {
+  id                String          @id @default(cuid())
+  referrerProfileId String          @unique
+  bankName          String
+  branchName        String
+  accountType       BankAccountType @default(ORDINARY)
+  accountNumber     String
+  accountHolder     String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  referrerProfile ReferrerProfile @relation(fields: [referrerProfileId], references: [id], onDelete: Cascade)
+
+  @@map("bank_accounts")
+}
+
+/// 掲載企業
+model Company {
+  id           String   @id @default(cuid())
+  name         String
+  contactName  String   @default("")
+  contactEmail String   @default("")
+  contactPhone String   @default("")
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  cases Case[]
+
+  @@map("companies")
+}
+
+/// 案件
+model Case {
+  id                String     @id @default(cuid())
+  companyId         String
+  title             String
+  category          String
+  area              String
+  summary           String
+  description       String
+  eligibilityNotes  String     @default("")
+  ineligibleNotes   String     @default("")
+  rewardTimingNotes String     @default("")
+  rewardLabel       String
+  rewardAmount      Int
+  status            CaseStatus @default(DRAFT)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  company           Company            @relation(fields: [companyId], references: [id])
+  referralLinkCases ReferralLinkCase[]
+  applications      Application[]
+
+  @@map("cases")
+}
+
+/// 紹介URL (紹介者と、束ねた案件群を紐付ける)
+model ReferralLink {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  referrerId String
+  createdAt  DateTime @default(now())
+
+  referrer     User               @relation(fields: [referrerId], references: [id])
+  cases        ReferralLinkCase[]
+  applications Application[]
+
+  @@map("referral_links")
+}
+
+/// 紹介URL ⇔ 案件 の多対多結合
+model ReferralLinkCase {
+  id             String @id @default(cuid())
+  referralLinkId String
+  caseId         String
+
+  referralLink ReferralLink @relation(fields: [referralLinkId], references: [id], onDelete: Cascade)
+  case         Case         @relation(fields: [caseId], references: [id])
+
+  @@unique([referralLinkId, caseId])
+  @@map("referral_link_cases")
+}
+
+/// 紹介された申込者
+model Applicant {
+  id         String   @id @default(cuid())
+  fullName   String
+  birthDate  DateTime
+  postalCode String   @default("")
+  address    String
+  phone      String
+  email      String
+  notes      String   @default("")
+  createdAt  DateTime @default(now())
+
+  applications Application[]
+
+  @@map("applicants")
+}
+
+/// 申込レコード (申込者 × 案件 で1件。進捗・成果・報酬・支払状況を保持)
+model Application {
+  id               String         @id @default(cuid())
+  applicantId      String
+  caseId           String
+  referralLinkId   String
+  progressStatus   ProgressStatus @default(APPLIED)
+  rewardStatus     RewardStatus   @default(UNCONFIRMED)
+  rewardAmount     Int?
+  ineligibleReason String?
+  internalNotes    String         @default("")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  applicant    Applicant    @relation(fields: [applicantId], references: [id])
+  case         Case         @relation(fields: [caseId], references: [id])
+  referralLink ReferralLink @relation(fields: [referralLinkId], references: [id])
+
+  @@map("applications")
+}
+
+/// 規約同意情報
+model ConsentRecord {
+  id           String              @id @default(cuid())
+  subjectType  ConsentSubjectType
+  subjectId    String
+  documentType ConsentDocumentType
+  version      String
+  agreedAt     DateTime            @default(now())
+
+  @@map("consent_records")
+}
+
+/// 運営管理者アカウント
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  createdAt    DateTime @default(now())
+
+  @@map("admin_users")
+}

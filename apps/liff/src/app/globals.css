@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #f7f5f1;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1efea;
+  --color-border: #e6e1d8;
+  --color-ink: #14171f;
+  --color-ink-muted: #6b7280;
+  --color-primary: #4338ca;
+  --color-primary-hover: #372ca0;
+  --color-primary-soft: #eef0fe;
+  --color-money: #b45309;
+  --color-money-soft: #fef3c7;
+  --color-line-brand: #06c755;
+  --color-success: #15803d;
+  --color-success-soft: #dcfce7;
+  --color-warning: #b45309;
+  --color-warning-soft: #fef3c7;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fee2e2;
+  --color-info: #1d4ed8;
+  --color-info-soft: #dbeafe;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-card: 0 2px 10px rgba(20, 23, 31, 0.06);
+  --shadow-float: 0 12px 32px rgba(20, 23, 31, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-viewport {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  position: relative;
+  box-shadow: 0 0 60px rgba(20, 23, 31, 0.08);
+}
+
+@supports (padding: max(0px)) {
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}

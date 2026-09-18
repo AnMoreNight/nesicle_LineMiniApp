@@ -1,0 +1,17 @@
+node_modules/
+.next/
+dist/
+build/
+# Matches .env, .env.local, .env.production, .env.*.local, etc. at any depth,
+# but keep the checked-in placeholder template.
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.log
+.DS_Store
+.turbo/
+packages/db/generated/
+.vscode/
