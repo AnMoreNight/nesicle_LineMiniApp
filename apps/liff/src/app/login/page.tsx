@@ -35,7 +35,15 @@ export default function LoginPage() {
           console.warn("[liff] initLiff() returned null — NEXT_PUBLIC_LIFF_ID missing at build time?");
           return;
         }
-        console.log("[liff] init ok. isLoggedIn:", liff.isLoggedIn());
+        console.log("[liff] init ok. snapshot:", {
+          href: window.location.href,
+          isLoggedIn: liff.isLoggedIn(),
+          isInClient: liff.isInClient(),
+          os: liff.getOS(),
+          liffId: liff.id,
+          hasAccessToken: Boolean(liff.getAccessToken()),
+          hasIdToken: Boolean(liff.getIDToken()),
+        });
         if (!liff.isLoggedIn()) {
           // Explicit redirectUri (stripped of any query string) so repeated login attempts
           // don't accumulate/conflict with leftover LINE auth params (code=, state=, liff.state=)
