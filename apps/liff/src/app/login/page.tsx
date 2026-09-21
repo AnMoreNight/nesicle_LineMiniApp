@@ -14,10 +14,10 @@ const LIFF_ENABLED = Boolean(process.env.NEXT_PUBLIC_LIFF_ID);
 export default function LoginPage() {
   const router = useRouter();
   const { user, loading, refresh } = useSession();
-  const [checkingLiff, setCheckingLiff] = useState(LIFF_ENABLED);
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [attemptedLogin, setAttemptedLogin] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -25,60 +25,27 @@ export default function LoginPage() {
     }
   }, [loading, user, router]);
 
+  // SessionProvider already tried, globally, to silently complete any pending LIFF login
+  // (see completeLiffLoginIfPossible). If we land here and still have no session, there's
+  // nothing pending to complete — kick off a fresh LINE login.
   useEffect(() => {
-    if (!LIFF_ENABLED) return;
+    if (loading || user || !LIFF_ENABLED || attemptedLogin) return;
+    setAttemptedLogin(true);
     (async () => {
       try {
-        console.log("[liff] initializing...");
         const liff = await initLiff();
         if (!liff) {
-          console.warn("[liff] initLiff() returned null — NEXT_PUBLIC_LIFF_ID missing at build time?");
+          console.warn("[liff] initLiff() returned null on /login — NEXT_PUBLIC_LIFF_ID missing at build time?");
           return;
         }
-        console.log("[liff] init ok. snapshot:", {
-          href: window.location.href,
-          isLoggedIn: liff.isLoggedIn(),
-          isInClient: liff.isInClient(),
-          os: liff.getOS(),
-          liffId: liff.id,
-          hasAccessToken: Boolean(liff.getAccessToken()),
-          hasIdToken: Boolean(liff.getIDToken()),
-        });
-        if (!liff.isLoggedIn()) {
-          // Plain liff.login() with no explicit redirectUri — let the LIFF SDK use its own
-          // default (falls back to the registered Endpoint URL / current href internally).
-          // An earlier attempt at passing an explicit redirectUri here appeared to make
-          // liff.login() silently no-op (no navigation at all) rather than help, so reverted.
-          console.log("[liff] not logged in, calling liff.login()");
-          liff.login();
-          return;
-        }
-        const [profile, idToken] = await Promise.all([liff.getProfile(), Promise.resolve(liff.getIDToken())]);
-        console.log("[liff] profile:", profile, "idToken present:", Boolean(idToken));
-        if (!idToken) throw new Error("IDトークンを取得できませんでした。");
-        await api.post("/api/auth/liff-login", {
-          idToken,
-          displayName: profile.displayName,
-          pictureUrl: profile.pictureUrl,
-        });
-        console.log("[liff] liff-login API call succeeded");
-        await refresh();
-        router.replace("/");
+        console.log("[liff] no session yet, calling liff.login()");
+        liff.login();
       } catch (err) {
-        console.error("[liff] login flow failed:", err);
-        const message =
-          err instanceof ApiError
-            ? err.message
-            : err instanceof Error
-              ? `LINEログインに失敗しました。(${err.message})`
-              : "LINEログインに失敗しました。";
-        setError(message);
-      } finally {
-        setCheckingLiff(false);
+        console.error("[liff] failed to start login:", err);
+        setError("LINEログインに失敗しました。");
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loading, user, attemptedLogin]);
 
   async function handleDevLogin(name: string, lineUserId?: string) {
     setSubmitting(true);
@@ -94,7 +61,7 @@ export default function LoginPage() {
     }
   }
 
-  if (checkingLiff) {
+  if (loading) {
     return <PageSpinner />;
   }
 

@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { api } from "./api";
+import { completeLiffLoginIfPossible } from "./liff";
 
 export interface SessionUser {
   id: string;
@@ -36,7 +37,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refresh();
+    (async () => {
+      try {
+        // Runs on every page load, globally — see completeLiffLoginIfPossible's own comment
+        // for why this can't just live on the /login page.
+        await completeLiffLoginIfPossible();
+      } catch (err) {
+        console.error("[session] LIFF login completion attempt failed:", err);
+      }
+      await refresh();
+    })();
   }, [refresh]);
 
   const logout = useCallback(async () => {
