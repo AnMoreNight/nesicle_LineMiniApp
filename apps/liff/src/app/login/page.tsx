@@ -45,12 +45,12 @@ export default function LoginPage() {
           hasIdToken: Boolean(liff.getIDToken()),
         });
         if (!liff.isLoggedIn()) {
-          // Explicit redirectUri (stripped of any query string) so repeated login attempts
-          // don't accumulate/conflict with leftover LINE auth params (code=, state=, liff.state=)
-          // from a previous round-trip, which otherwise corrupts the next attempt silently.
-          const cleanRedirectUri = `${window.location.origin}${window.location.pathname}`;
-          console.log("[liff] not logged in, redirecting to LINE login. redirectUri:", cleanRedirectUri);
-          liff.login({ redirectUri: cleanRedirectUri });
+          // Plain liff.login() with no explicit redirectUri — let the LIFF SDK use its own
+          // default (falls back to the registered Endpoint URL / current href internally).
+          // An earlier attempt at passing an explicit redirectUri here appeared to make
+          // liff.login() silently no-op (no navigation at all) rather than help, so reverted.
+          console.log("[liff] not logged in, calling liff.login()");
+          liff.login();
           return;
         }
         const [profile, idToken] = await Promise.all([liff.getProfile(), Promise.resolve(liff.getIDToken())]);
