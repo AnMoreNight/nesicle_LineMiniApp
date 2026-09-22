@@ -12,7 +12,8 @@ import clsx from "clsx";
 
 export default function CasesPage() {
   const { data: cases, loading } = useApiGet<CaseSummaryDto[]>("/api/cases");
-  const cart = useCartStore();
+  const items = useCartStore((s) => s.items);
+  const toggle = useCartStore((s) => s.toggle);
   const [category, setCategory] = useState<string>("すべて");
 
   const categories = useMemo(() => ["すべて", ...new Set((cases ?? []).map((c) => c.category))], [cases]);
@@ -44,7 +45,13 @@ export default function CasesPage() {
         ) : (
           <div className="space-y-3">
             {filtered.map((c) => (
-              <CaseCard key={c.id} item={c} inCart={cart.has(c.id)} onToggleCart={cart.toggle} />
+              <CaseCard
+                key={c.id}
+                item={c}
+                showAddButton
+                inCart={items.some((i) => i.id === c.id)}
+                onToggleCart={toggle}
+              />
             ))}
           </div>
         )}

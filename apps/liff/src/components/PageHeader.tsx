@@ -6,7 +6,7 @@ import { IconBack } from "./icons";
 export function PageHeader({ title, onBack }: { title: string; onBack?: () => void }) {
   const router = useRouter();
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-surface/95 px-4 py-3.5 backdrop-blur">
+    <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-surface px-4 py-3.5">
       <button
         type="button"
         onClick={() => (onBack ? onBack() : router.back())}

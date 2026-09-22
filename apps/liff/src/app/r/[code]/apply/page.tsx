@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import type { ApplyPayload, ReferralLandingDto } from "@nesicle/shared";
 import { PageHeader } from "@/components/PageHeader";
 import { PageSpinner } from "@/components/Spinner";
@@ -167,7 +168,14 @@ export default function ApplyPage() {
             checked={form.agreedTerms}
             onChange={(e) => setForm({ ...form, agreedTerms: e.target.checked })}
           />
-          利用規約およびプライバシーポリシーに同意します
+          <Link href="/terms" target="_blank" className="font-bold text-primary underline">
+            利用規約
+          </Link>
+          および
+          <Link href="/privacy" target="_blank" className="font-bold text-primary underline">
+            プライバシーポリシー
+          </Link>
+          に同意します
         </label>
 
         {error && <p className="text-xs font-bold text-danger">{error}</p>}

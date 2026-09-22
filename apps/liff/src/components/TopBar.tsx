@@ -8,7 +8,7 @@ export function TopBar({ title, subtitle }: { title: string; subtitle?: string }
   const { user } = useSession();
 
   return (
-    <header className="sticky top-0 z-10 border-b border-border bg-surface/95 px-5 pb-3 pt-4 backdrop-blur">
+    <header className="sticky top-0 z-10 border-b border-border bg-surface px-5 pb-3 pt-4">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-lg font-extrabold tracking-tight">{title}</p>

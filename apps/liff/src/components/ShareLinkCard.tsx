@@ -3,11 +3,21 @@
 import { useState } from "react";
 import type { ReferralLinkDto } from "@nesicle/shared";
 import { buildShareMessage, copyText, shareViaLine, shareViaSms } from "@/lib/share";
-import { btnLine, btnOutline, btnSecondary, card } from "@/lib/ui";
-import { IconCopy } from "./icons";
+import { btnLine, btnSecondary, card } from "@/lib/ui";
+import { IconCopy, IconTrash } from "./icons";
 import clsx from "clsx";
 
-export function ShareLinkCard({ link, highlight = false }: { link: ReferralLinkDto; highlight?: boolean }) {
+const iconBtn = "flex h-10 w-10 shrink-0 items-center justify-center rounded-md border transition active:scale-[.98]";
+
+export function ShareLinkCard({
+  link,
+  highlight = false,
+  onDelete,
+}: {
+  link: ReferralLinkDto;
+  highlight?: boolean;
+  onDelete?: () => void;
+}) {
   const [copied, setCopied] = useState(false);
   const message = buildShareMessage(
     link.url,
@@ -26,11 +36,19 @@ export function ShareLinkCard({ link, highlight = false }: { link: ReferralLinkD
       <p className="mt-2 break-all rounded-md border border-border bg-surface-muted px-3 py-2.5 text-xs text-ink-muted">
         {link.url}
       </p>
-      <div className="mt-3 grid grid-cols-3 gap-2">
-        <button type="button" onClick={() => shareViaLine(link.url, message)} className={clsx(btnLine, "!px-2 text-xs")}>
+      <div className="mt-3 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => shareViaLine(link.url, message)}
+          className={clsx(btnLine, "flex-1 !px-2 text-xs")}
+        >
           LINEで送る
         </button>
-        <button type="button" onClick={() => shareViaSms(message)} className={clsx(btnSecondary, "!px-2 text-xs")}>
+        <button
+          type="button"
+          onClick={() => shareViaSms(message)}
+          className={clsx(btnSecondary, "flex-1 !px-2 text-xs")}
+        >
           SMSで送る
         </button>
         <button
@@ -42,11 +60,23 @@ export function ShareLinkCard({ link, highlight = false }: { link: ReferralLinkD
               setTimeout(() => setCopied(false), 2000);
             }
           }}
-          className={clsx(btnOutline, "!px-2 text-xs")}
+          aria-label={copied ? "コピー済み" : "URLをコピー"}
+          title={copied ? "コピー済み" : "URLをコピー"}
+          className={clsx(iconBtn, copied ? "border-success bg-success-soft text-success" : "border-border text-ink-muted")}
         >
           <IconCopy className="h-4 w-4" />
-          {copied ? "コピー済み" : "コピー"}
         </button>
+        {onDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            aria-label="紹介URLを削除"
+            title="削除する"
+            className={clsx(iconBtn, "border-danger/30 text-danger")}
+          >
+            <IconTrash className="h-4 w-4" />
+          </button>
+        )}
       </div>
       <p className="mt-2 text-[11px] text-ink-muted">発行日: {new Date(link.createdAt).toLocaleDateString("ja-JP")}</p>
     </div>

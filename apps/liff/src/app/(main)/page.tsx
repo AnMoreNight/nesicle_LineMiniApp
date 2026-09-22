@@ -8,14 +8,13 @@ import { PageSpinner } from "@/components/Spinner";
 import { useApiGet } from "@/lib/useApiGet";
 import { useCartStore } from "@/lib/cartStore";
 import { useSession } from "@/lib/session";
-import { btnPrimary } from "@/lib/ui";
-import clsx from "clsx";
 
 export default function HomePage() {
   const { user } = useSession();
   const { data: rewards, loading: rewardsLoading } = useApiGet<RewardsSummaryDto>("/api/me/rewards");
   const { data: cases, loading: casesLoading } = useApiGet<CaseSummaryDto[]>("/api/cases");
-  const cart = useCartStore();
+  const items = useCartStore((s) => s.items);
+  const toggle = useCartStore((s) => s.toggle);
 
   if (rewardsLoading || casesLoading) return <PageSpinner />;
 
@@ -25,7 +24,7 @@ export default function HomePage() {
     <div>
       <TopBar title="ネシクル パートナー" subtitle={user ? `${user.displayName} さん、こんにちは` : undefined} />
       <main className="space-y-6 px-5 py-5">
-        <section className="rounded-lg bg-gradient-to-br from-primary to-[#6754e8] p-5 text-white shadow-float">
+        <section className="rounded-lg bg-gradient-to-br from-primary to-[#048848] p-5 text-white shadow-float">
           <p className="text-xs font-bold opacity-80">これまでの確定報酬</p>
           <p className="mt-1 text-3xl font-extrabold tabular-nums">{formatYen((rewards?.confirmedTotal ?? 0) + (rewards?.paidTotal ?? 0))}</p>
           <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
@@ -48,16 +47,16 @@ export default function HomePage() {
           </div>
           <div className="space-y-3">
             {recommended.map((c) => (
-              <CaseCard key={c.id} item={c} inCart={cart.has(c.id)} onToggleCart={cart.toggle} />
+              <CaseCard
+                key={c.id}
+                item={c}
+                showAddButton
+                inCart={items.some((i) => i.id === c.id)}
+                onToggleCart={toggle}
+              />
             ))}
           </div>
         </section>
-
-        {cart.items.length > 0 && (
-          <Link href="/cart" className={clsx(btnPrimary, "sticky bottom-4 w-full shadow-float")}>
-            カート内の{cart.items.length}件から紹介URLを作る →
-          </Link>
-        )}
       </main>
     </div>
   );

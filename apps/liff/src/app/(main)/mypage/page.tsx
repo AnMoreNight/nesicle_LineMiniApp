@@ -51,7 +51,7 @@ export default function MyPage() {
           {consent?.agreed ? (
             <p className="mt-0.5 text-sm font-bold text-success">同意済みです</p>
           ) : (
-            <div className="mt-2 flex items-center justify-between gap-3">
+            <div className="mt-2 space-y-2">
               <p className="text-xs text-ink-muted">サービス利用には利用規約への同意が必要です。</p>
               <button
                 type="button"
@@ -59,12 +59,16 @@ export default function MyPage() {
                   await api.post("/api/me/consent", { documentType: "TERMS", version: "1.0" });
                   reloadConsent();
                 }}
-                className="shrink-0 rounded-md bg-primary px-3 py-2 text-xs font-bold text-white"
+                className="w-full rounded-md bg-primary px-3 py-2.5 text-xs font-bold text-white"
               >
                 同意する
               </button>
             </div>
           )}
+          <div className="mt-3 flex gap-4 border-t border-border pt-3 text-xs font-bold text-primary">
+            <Link href="/terms">利用規約を見る</Link>
+            <Link href="/privacy">プライバシーポリシーを見る</Link>
+          </div>
         </div>
 
         <button

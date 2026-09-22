@@ -70,4 +70,20 @@ export default async function referralLinksRoutes(app: FastifyInstance) {
     });
     return links.map((link) => toDto({ ...link, cases: link.cases.map((rc) => ({ case: rc.case })) }));
   });
+
+  app.delete("/api/me/referral-links/:id", { preHandler: requireReferrer }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const link = await prisma.referralLink.findFirst({
+      where: { id, referrerId: request.referrerUserId },
+    });
+    if (!link) {
+      return reply.code(404).send({ error: "紹介URLが見つかりません。" });
+    }
+    const applicationCount = await prisma.application.count({ where: { referralLinkId: id } });
+    if (applicationCount > 0) {
+      return reply.code(400).send({ error: "この紹介URLはすでに申込みが発生しているため削除できません。" });
+    }
+    await prisma.referralLink.delete({ where: { id } });
+    return { ok: true };
+  });
 }

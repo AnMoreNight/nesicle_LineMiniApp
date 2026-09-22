@@ -1,20 +1,18 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import type { CaseDetailDto } from "@nesicle/shared";
 import { PageHeader } from "@/components/PageHeader";
 import { MoneyText } from "@/components/MoneyText";
 import { PageSpinner } from "@/components/Spinner";
 import { useApiGet } from "@/lib/useApiGet";
-import { useCartStore } from "@/lib/cartStore";
 import { btnPrimary, card } from "@/lib/ui";
 import clsx from "clsx";
 
 export default function CaseDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const { data: c, loading, error } = useApiGet<CaseDetailDto>(`/api/cases/${id}`);
-  const cart = useCartStore();
 
   if (loading) return <PageSpinner />;
   if (error || !c) {
@@ -25,8 +23,6 @@ export default function CaseDetailPage() {
       </div>
     );
   }
-
-  const inCart = cart.has(c.id);
 
   return (
     <div className="pb-28">
@@ -71,15 +67,9 @@ export default function CaseDetailPage() {
       </main>
 
       <div className="safe-bottom fixed bottom-0 left-1/2 w-full max-w-[480px] -translate-x-1/2 border-t border-border bg-surface p-3">
-        {inCart ? (
-          <button type="button" onClick={() => router.push("/cart")} className={clsx(btnPrimary, "w-full")}>
-            カートに追加済み・カートを見る →
-          </button>
-        ) : (
-          <button type="button" onClick={() => cart.add(c)} className={clsx(btnPrimary, "w-full")}>
-            この案件をカートに追加する
-          </button>
-        )}
+        <Link href={`/refer?preselect=${c.id}`} className={clsx(btnPrimary, "block w-full text-center")}>
+          この案件を紹介する →
+        </Link>
       </div>
     </div>
   );
