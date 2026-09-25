@@ -22,11 +22,25 @@ export function SelectionBar({ onIssued }: { onIssued?: () => void }) {
       const link = await api.post<ReferralLinkDto>("/api/referral-links", {
         caseIds: items.map((c) => c.id),
       });
-      clear();
+      // The backend already clears matching selection rows when the link is created, so this
+      // is just keeping local state in sync — not critical if it fails.
+      clear().catch(() => {});
       onIssued?.();
       router.push(`/refer?justCreated=${link.id}`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "紹介URLの発行に失敗しました。");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleClear() {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await clear();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "選択の削除に失敗しました。もう一度お試しください。");
     } finally {
       setSubmitting(false);
     }
@@ -47,8 +61,9 @@ export function SelectionBar({ onIssued }: { onIssued?: () => void }) {
           </button>
           <button
             type="button"
-            onClick={clear}
-            className="rounded-full border border-danger/40 bg-surface px-3 py-1.5 text-xs font-bold text-danger"
+            onClick={handleClear}
+            disabled={submitting}
+            className="rounded-full border border-danger/40 bg-surface px-3 py-1.5 text-xs font-bold text-danger disabled:opacity-60"
           >
             削除
           </button>

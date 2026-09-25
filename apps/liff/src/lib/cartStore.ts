@@ -11,7 +11,9 @@ interface CartState {
   remove: (caseId: string) => void;
   toggle: (item: CaseSummaryDto) => void;
   has: (caseId: string) => boolean;
-  clear: () => void;
+  /** Rejects if the server-side clear fails, so callers can show a real error instead of
+   *  silently leaving local and server state out of sync. */
+  clear: () => Promise<void>;
 }
 
 // Selection ("checked" cases pending referral-URL issuance) is persisted server-side
@@ -51,10 +53,15 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
   has: (caseId) => get().items.some((i) => i.id === caseId),
-  clear: () => {
+  clear: async () => {
+    const previous = get().items;
     set({ items: [] });
-    api.delete("/api/me/selection").catch((err) => {
+    try {
+      await api.delete("/api/me/selection");
+    } catch (err) {
       console.error("[selection] failed to sync clear:", err);
-    });
+      set({ items: previous }); // roll back the optimistic clear so UI matches reality
+      throw err;
+    }
   },
 }));
