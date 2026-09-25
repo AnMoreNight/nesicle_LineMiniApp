@@ -59,6 +59,11 @@ export default async function referralLinksRoutes(app: FastifyInstance) {
       include: { cases: { include: { case: { include: { company: true } } } } },
     });
 
+    // These cases are now issued as a real referral link, no longer just "pending selection".
+    await prisma.referralSelection.deleteMany({
+      where: { userId: request.referrerUserId, caseId: { in: parsed.data.caseIds } },
+    });
+
     return toDto({ ...link, cases: link.cases.map((rc) => ({ case: rc.case })) });
   });
 

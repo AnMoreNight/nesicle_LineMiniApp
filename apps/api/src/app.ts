@@ -5,6 +5,7 @@ import { env } from "./env.js";
 import authRoutes from "./routes/auth.js";
 import casesRoutes from "./routes/cases.js";
 import referralLinksRoutes from "./routes/referralLinks.js";
+import selectionRoutes from "./routes/selection.js";
 import applicationsRoutes from "./routes/applications.js";
 import rewardsRoutes from "./routes/rewards.js";
 import profileRoutes from "./routes/profile.js";
@@ -32,6 +33,7 @@ export async function buildApp() {
   await app.register(authRoutes);
   await app.register(casesRoutes);
   await app.register(referralLinksRoutes);
+  await app.register(selectionRoutes);
   await app.register(applicationsRoutes);
   await app.register(rewardsRoutes);
   await app.register(profileRoutes);
