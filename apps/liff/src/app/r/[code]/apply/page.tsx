@@ -154,14 +154,14 @@ export default function ApplyPage() {
                 />
                 <span>
                   <span className="block text-base font-bold">{c.title}</span>
-                  <span className="block text-sm text-ink-muted">{c.summary}</span>
+                  <span className="block text-base text-ink-muted">{c.summary}</span>
                 </span>
               </label>
             ))}
           </div>
         </div>
 
-        <label className="flex items-start gap-2 text-sm text-ink-muted">
+        <label className="flex items-start gap-2 text-base text-ink-muted">
           <input
             type="checkbox"
             className="mt-0.5"
@@ -178,7 +178,7 @@ export default function ApplyPage() {
           に同意します
         </label>
 
-        {error && <p className="text-sm font-bold text-danger">{error}</p>}
+        {error && <p className="text-base font-bold text-danger">{error}</p>}
 
         <button type="submit" disabled={submitting || !form.agreedTerms} className={clsx(btnPrimary, "w-full")}>
           {submitting ? "送信中…" : "この内容で申し込む"}

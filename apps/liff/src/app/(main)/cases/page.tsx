@@ -22,14 +22,14 @@ export default function CasesPage() {
   return (
     <div>
       <TopBar title="案件一覧" subtitle={`公開中 ${cases?.length ?? 0}件`} />
-      <main className="space-y-4 px-5 py-5">
+      <main className="space-y-4 px-5 py-4">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setCategory(cat)}
               className={clsx(
-                "shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-bold",
+                "shrink-0 rounded-full border px-4 py-2 text-base font-bold",
                 category === cat ? "border-primary bg-primary text-white" : "border-border bg-surface text-ink-muted",
               )}
             >

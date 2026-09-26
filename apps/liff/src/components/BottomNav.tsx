@@ -26,11 +26,11 @@ export function BottomNav() {
               key={href}
               href={href}
               className={clsx(
-                "relative flex flex-1 flex-col items-center gap-0.5 py-2 text-xs font-bold",
+                "relative flex flex-1 flex-col items-center gap-1 py-2.5 text-sm font-bold",
                 active ? "text-primary" : "text-ink-muted",
               )}
             >
-              <Icon className="h-6 w-6" />
+              <Icon className="h-7 w-7" />
               {label}
             </Link>
           );

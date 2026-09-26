@@ -7,7 +7,7 @@ import { btnLine, btnSecondary, card } from "@/lib/ui";
 import { IconCopy, IconTrash } from "./icons";
 import clsx from "clsx";
 
-const iconBtn = "flex h-10 w-10 shrink-0 items-center justify-center rounded-md border transition active:scale-[.98]";
+const iconBtn = "flex h-12 w-12 shrink-0 items-center justify-center rounded-md border transition active:scale-[.98]";
 
 export function ShareLinkCard({
   link,
@@ -28,26 +28,26 @@ export function ShareLinkCard({
     <div className={clsx(card, highlight && "border-primary/40 ring-2 ring-primary/15")}>
       <div className="flex flex-wrap gap-1.5">
         {link.cases.map((c) => (
-          <span key={c.id} className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary">
+          <span key={c.id} className="rounded-md bg-primary-soft px-2.5 py-1 text-base font-bold text-primary">
             {c.title}
           </span>
         ))}
       </div>
-      <p className="mt-2 break-all rounded-md border border-border bg-surface-muted px-3 py-2.5 text-sm text-ink-muted">
+      <p className="mt-2 break-all rounded-md border border-border bg-surface-muted px-3 py-2.5 text-base text-ink-muted">
         {link.url}
       </p>
       <div className="mt-3 flex items-center gap-2">
         <button
           type="button"
           onClick={() => shareViaLine(link.url, message)}
-          className={clsx(btnLine, "flex-1 !px-2 text-sm")}
+          className={clsx(btnLine, "flex-1 !px-2 text-base")}
         >
           LINEで送る
         </button>
         <button
           type="button"
           onClick={() => shareViaSms(message)}
-          className={clsx(btnSecondary, "flex-1 !px-2 text-sm")}
+          className={clsx(btnSecondary, "flex-1 !px-2 text-base")}
         >
           SMSで送る
         </button>
@@ -64,7 +64,7 @@ export function ShareLinkCard({
           title={copied ? "コピー済み" : "URLをコピー"}
           className={clsx(iconBtn, copied ? "border-success bg-success-soft text-success" : "border-border text-ink-muted")}
         >
-          <IconCopy className="h-4 w-4" />
+          <IconCopy className="h-5 w-5" />
         </button>
         {onDelete && (
           <button
@@ -74,11 +74,11 @@ export function ShareLinkCard({
             title="削除する"
             className={clsx(iconBtn, "border-danger/30 text-danger")}
           >
-            <IconTrash className="h-4 w-4" />
+            <IconTrash className="h-5 w-5" />
           </button>
         )}
       </div>
-      <p className="mt-2 text-xs text-ink-muted">発行日: {new Date(link.createdAt).toLocaleDateString("ja-JP")}</p>
+      <p className="mt-2 text-sm text-ink-muted">発行日: {new Date(link.createdAt).toLocaleDateString("ja-JP")}</p>
     </div>
   );
 }

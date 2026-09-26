@@ -49,7 +49,7 @@ export default function BankAccountEditPage() {
     <div>
       <PageHeader title="振込先口座" />
       <form onSubmit={handleSubmit} className="space-y-4 px-5 py-5">
-        <p className="rounded-md bg-info-soft px-3 py-2.5 text-sm leading-relaxed text-info">
+        <p className="rounded-md bg-info-soft px-3 py-2.5 text-base leading-relaxed text-info">
           報酬のお振込先となる口座情報を登録してください。登録内容は運営事務局のみが確認できます。
         </p>
         <div>
@@ -106,7 +106,7 @@ export default function BankAccountEditPage() {
             placeholder="ヤマダ タロウ"
           />
         </div>
-        {error && <p className="text-sm font-bold text-danger">{error}</p>}
+        {error && <p className="text-base font-bold text-danger">{error}</p>}
         <button type="submit" disabled={saving} className={clsx(btnPrimary, "w-full")}>
           {saving ? "保存中…" : "保存する"}
         </button>
