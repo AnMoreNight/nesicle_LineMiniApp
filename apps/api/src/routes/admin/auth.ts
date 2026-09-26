@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@nesicle/db";
+import { env } from "../../env.js";
 import { requireAdmin } from "../../lib/auth.js";
 import { ADMIN_COOKIE, cookieOptions, signAdminToken } from "../../lib/jwt.js";
 
@@ -15,8 +16,11 @@ const changePasswordSchema = z.object({
   newPassword: z.string().min(8, "新しいパスワードは8文字以上で入力してください。"),
 });
 
-// Admin console is normally accessed same-site (plain localhost), unlike the LIFF app.
-const COOKIE_OPTIONS = cookieOptions(60 * 60 * 12, false);
+// Same cross-site flag the referrer/LIFF cookie uses — the admin console now runs as its own
+// deployed web app (Vercel) talking to the API on a different domain (Render), just like LIFF,
+// so it needs the same SameSite=None+Secure handling. Locally both stay on plain localhost,
+// where COOKIE_CROSS_SITE is unset/false and Lax cookies work fine.
+const COOKIE_OPTIONS = cookieOptions(60 * 60 * 12, env.crossSiteCookies);
 
 export default async function adminAuthRoutes(app: FastifyInstance) {
   app.post("/api/admin/auth/login", async (request, reply) => {
