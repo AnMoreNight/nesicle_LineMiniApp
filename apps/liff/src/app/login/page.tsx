@@ -72,7 +72,7 @@ export default function LoginPage() {
         <p className="mt-2 text-sm text-ink-muted">紹介するだけで報酬がもらえる、紹介者向けLINEミニアプリ</p>
       </div>
 
-      {error && <p className="mb-4 text-center text-xs font-bold text-danger">{error}</p>}
+      {error && <p className="mb-4 text-center text-sm font-bold text-danger">{error}</p>}
 
       {LIFF_ENABLED ? (
         <button

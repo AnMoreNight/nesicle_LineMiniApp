@@ -25,13 +25,13 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
+              aria-label={label}
               className={clsx(
-                "relative flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] font-bold",
+                "relative flex flex-1 items-center justify-center py-3.5",
                 active ? "text-primary" : "text-ink-muted",
               )}
             >
-              <Icon className="h-5 w-5" />
-              {label}
+              <Icon className="h-8 w-8" />
             </Link>
           );
         })}

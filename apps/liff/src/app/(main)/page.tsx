@@ -23,16 +23,16 @@ export default function HomePage() {
   return (
     <div>
       <TopBar title="ネシクル パートナー" subtitle={user ? `${user.displayName} さん、こんにちは` : undefined} />
-      <main className="space-y-6 px-5 py-5">
-        <section className="rounded-lg bg-gradient-to-br from-primary to-[#048848] p-5 text-white shadow-float">
-          <p className="text-xs font-bold opacity-80">これまでの確定報酬</p>
-          <p className="mt-1 text-3xl font-extrabold tabular-nums">{formatYen((rewards?.confirmedTotal ?? 0) + (rewards?.paidTotal ?? 0))}</p>
-          <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
-            <span className="rounded-md bg-white/20 px-2.5 py-1.5">未確定 {formatYen(rewards?.unconfirmedTotal ?? 0)}</span>
-            <span className="rounded-md bg-white/20 px-2.5 py-1.5">支払済み {formatYen(rewards?.paidTotal ?? 0)}</span>
+      <main className="space-y-5 px-5 py-4">
+        <section className="rounded-lg bg-gradient-to-br from-primary to-[#048848] p-4 text-white shadow-float">
+          <p className="text-base font-bold opacity-80">これまでの確定報酬</p>
+          <p className="mt-1 text-5xl font-extrabold tabular-nums">{formatYen((rewards?.confirmedTotal ?? 0) + (rewards?.paidTotal ?? 0))}</p>
+          <div className="mt-3 flex flex-wrap gap-2 text-base font-bold">
+            <span className="rounded-md bg-white/20 px-3 py-2">未確定 {formatYen(rewards?.unconfirmedTotal ?? 0)}</span>
+            <span className="rounded-md bg-white/20 px-3 py-2">支払済み {formatYen(rewards?.paidTotal ?? 0)}</span>
           </div>
           {!rewards?.hasBankAccount && (
-            <Link href="/mypage/bank" className="mt-3 block text-xs font-bold underline underline-offset-2 opacity-90">
+            <Link href="/mypage/bank" className="mt-3 block text-base font-bold underline underline-offset-2 opacity-90">
               振込先口座を登録する →
             </Link>
           )}
@@ -40,8 +40,8 @@ export default function HomePage() {
 
         <section>
           <div className="mb-3 flex items-end justify-between">
-            <p className="text-base font-extrabold">おすすめ案件</p>
-            <Link href="/cases" className="text-xs font-bold text-primary">
+            <p className="text-xl font-extrabold">おすすめ案件</p>
+            <Link href="/cases" className="text-base font-bold text-primary">
               すべて見る
             </Link>
           </div>
