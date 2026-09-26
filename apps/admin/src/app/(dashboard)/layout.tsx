@@ -7,7 +7,7 @@ import { Topbar } from "@/components/Topbar";
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-bg">
+    <div className="flex h-screen overflow-hidden bg-bg">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />

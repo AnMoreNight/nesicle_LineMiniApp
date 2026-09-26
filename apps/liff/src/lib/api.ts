@@ -13,7 +13,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      // Only set when there's an actual body — Fastify's JSON parser rejects a request
+      // labeled application/json with an empty body (logout, clear-selection, etc. send none).
+      ...(init?.body ? { "Content-Type": "application/json" } : {}),
       // Bypasses ngrok's free-tier browser-warning interstitial when the API is tunneled
       // through ngrok during LIFF testing; ignored by a real (non-ngrok) API host.
       "ngrok-skip-browser-warning": "true",
@@ -36,5 +38,6 @@ export const api = {
     request<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined }),
   put: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "PUT", body: body ? JSON.stringify(body) : undefined }),
-  delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+  delete: <T>(path: string, body?: unknown) =>
+    request<T>(path, { method: "DELETE", body: body ? JSON.stringify(body) : undefined }),
 };
