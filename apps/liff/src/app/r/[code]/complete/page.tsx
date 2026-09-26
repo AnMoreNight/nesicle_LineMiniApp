@@ -20,7 +20,7 @@ function CompleteContent() {
         <br />
         担当企業より、順次ご連絡いたします。
       </p>
-      {id && <p className="mt-4 rounded-md bg-surface-muted px-3 py-2 text-base text-ink-muted">お問い合わせ番号: {id}</p>}
+      {id && <p className="mt-4 rounded-md bg-surface-muted px-3 py-2 text-sm text-ink-muted">お問い合わせ番号: {id}</p>}
     </div>
   );
 }
