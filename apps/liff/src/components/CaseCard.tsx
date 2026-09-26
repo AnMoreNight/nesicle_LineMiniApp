@@ -30,17 +30,17 @@ export function CaseCard({
         </label>
       )}
       <div className="flex flex-wrap gap-1.5">
-        <span className="rounded-md bg-primary-soft px-2 py-0.5 text-xs font-bold text-primary">{item.category}</span>
-        <span className="rounded-md bg-surface-muted px-2 py-0.5 text-xs font-bold text-ink-muted">{item.area}</span>
+        <span className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary">{item.category}</span>
+        <span className="rounded-md bg-surface-muted px-2 py-0.5 text-sm font-bold text-ink-muted">{item.area}</span>
       </div>
-      <p className="mt-2 text-base font-bold leading-snug">{item.title}</p>
-      <p className="mt-1 text-sm leading-relaxed text-ink-muted">{item.summary}</p>
-      <div className="mt-3">
-        <p className="text-[11px] text-ink-muted">紹介報酬</p>
-        <MoneyText amount={item.rewardAmount} className="text-lg" />
-        {item.rewardLabel && <span className="ml-1 text-xs font-bold text-money">({item.rewardLabel})</span>}
+      <p className="mt-2 text-lg font-bold leading-snug">{item.title}</p>
+      <p className="mt-1 text-base leading-relaxed text-ink-muted">{item.summary}</p>
+      <div className="mt-2.5">
+        <p className="text-xs text-ink-muted">紹介報酬</p>
+        <MoneyText amount={item.rewardAmount} className="text-xl" />
+        {item.rewardLabel && <span className="ml-1 text-sm font-bold text-money">({item.rewardLabel})</span>}
       </div>
-      <div className="mt-3 flex gap-2">
+      <div className="mt-2.5 flex gap-2">
         <Link href={`/cases/${item.id}`} className={clsx(btnSecondary, "flex-1 !py-2.5")}>
           詳細
         </Link>
@@ -49,7 +49,7 @@ export function CaseCard({
             type="button"
             onClick={() => onToggleCart?.(item)}
             className={clsx(
-              "flex-1 rounded-md !py-2.5 text-sm font-bold transition",
+              "flex-1 rounded-md !py-2.5 text-base font-bold transition",
               inCart ? "bg-primary text-white" : "border border-primary text-primary",
             )}
           >

@@ -28,26 +28,26 @@ export function ShareLinkCard({
     <div className={clsx(card, highlight && "border-primary/40 ring-2 ring-primary/15")}>
       <div className="flex flex-wrap gap-1.5">
         {link.cases.map((c) => (
-          <span key={c.id} className="rounded-md bg-primary-soft px-2 py-0.5 text-xs font-bold text-primary">
+          <span key={c.id} className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary">
             {c.title}
           </span>
         ))}
       </div>
-      <p className="mt-2 break-all rounded-md border border-border bg-surface-muted px-3 py-2.5 text-xs text-ink-muted">
+      <p className="mt-2 break-all rounded-md border border-border bg-surface-muted px-3 py-2.5 text-sm text-ink-muted">
         {link.url}
       </p>
       <div className="mt-3 flex items-center gap-2">
         <button
           type="button"
           onClick={() => shareViaLine(link.url, message)}
-          className={clsx(btnLine, "flex-1 !px-2 text-xs")}
+          className={clsx(btnLine, "flex-1 !px-2 text-sm")}
         >
           LINEで送る
         </button>
         <button
           type="button"
           onClick={() => shareViaSms(message)}
-          className={clsx(btnSecondary, "flex-1 !px-2 text-xs")}
+          className={clsx(btnSecondary, "flex-1 !px-2 text-sm")}
         >
           SMSで送る
         </button>
@@ -78,7 +78,7 @@ export function ShareLinkCard({
           </button>
         )}
       </div>
-      <p className="mt-2 text-[11px] text-ink-muted">発行日: {new Date(link.createdAt).toLocaleDateString("ja-JP")}</p>
+      <p className="mt-2 text-xs text-ink-muted">発行日: {new Date(link.createdAt).toLocaleDateString("ja-JP")}</p>
     </div>
   );
 }

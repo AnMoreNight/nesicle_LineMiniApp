@@ -16,8 +16,8 @@ function Row({ href, title, value }: { href: string; title: string; value: strin
   return (
     <Link href={href} className={clsx(card, "flex items-center justify-between")}>
       <div>
-        <p className="text-xs text-ink-muted">{title}</p>
-        <p className="mt-0.5 text-sm font-bold">{value}</p>
+        <p className="text-sm text-ink-muted">{title}</p>
+        <p className="mt-0.5 text-base font-bold">{value}</p>
       </div>
       <IconChevronRight className="h-5 w-5 text-ink-muted" />
     </Link>
@@ -47,25 +47,25 @@ export default function MyPage() {
         />
 
         <div className={card}>
-          <p className="text-xs text-ink-muted">利用規約への同意</p>
+          <p className="text-sm text-ink-muted">利用規約への同意</p>
           {consent?.agreed ? (
-            <p className="mt-0.5 text-sm font-bold text-success">同意済みです</p>
+            <p className="mt-0.5 text-base font-bold text-success">同意済みです</p>
           ) : (
             <div className="mt-2 space-y-2">
-              <p className="text-xs text-ink-muted">サービス利用には利用規約への同意が必要です。</p>
+              <p className="text-sm text-ink-muted">サービス利用には利用規約への同意が必要です。</p>
               <button
                 type="button"
                 onClick={async () => {
                   await api.post("/api/me/consent", { documentType: "TERMS", version: "1.0" });
                   reloadConsent();
                 }}
-                className="w-full rounded-md bg-primary px-3 py-2.5 text-xs font-bold text-white"
+                className="w-full rounded-md bg-primary px-3 py-2.5 text-sm font-bold text-white"
               >
                 同意する
               </button>
             </div>
           )}
-          <div className="mt-3 flex gap-4 border-t border-border pt-3 text-xs font-bold text-primary">
+          <div className="mt-3 flex gap-4 border-t border-border pt-3 text-sm font-bold text-primary">
             <Link href="/terms">利用規約を見る</Link>
             <Link href="/privacy">プライバシーポリシーを見る</Link>
           </div>

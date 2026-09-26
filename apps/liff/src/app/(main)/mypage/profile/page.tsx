@@ -95,7 +95,7 @@ export default function ProfileEditPage() {
             placeholder="東京都渋谷区..."
           />
         </div>
-        {error && <p className="text-xs font-bold text-danger">{error}</p>}
+        {error && <p className="text-sm font-bold text-danger">{error}</p>}
         <button type="submit" disabled={saving} className={clsx(btnPrimary, "w-full")}>
           {saving ? "保存中…" : "保存する"}
         </button>

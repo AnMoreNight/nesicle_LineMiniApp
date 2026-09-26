@@ -71,14 +71,14 @@ export function SelectionBar({
 
   return (
     <div>
-      <div className="flex items-center gap-2 rounded-full bg-primary py-1.5 pl-4 pr-1.5">
-        <span className="text-xs font-bold text-white">{checkedItems.length}件選択中</span>
+      <div className="flex items-center gap-2 rounded-full bg-primary py-2 pl-4 pr-1.5">
+        <span className="text-sm font-bold text-white">{checkedItems.length}件選択中</span>
         <div className="ml-auto flex gap-1.5">
           <button
             type="button"
             onClick={handleIssue}
             disabled={submitting}
-            className="w-20 rounded-full bg-white py-1.5 text-center text-xs font-bold text-primary disabled:opacity-60"
+            className="w-24 rounded-full bg-white py-2 text-center text-sm font-bold text-primary disabled:opacity-60"
           >
             {submitting ? "発行中…" : "URLを発行"}
           </button>
@@ -86,13 +86,13 @@ export function SelectionBar({
             type="button"
             onClick={handleClear}
             disabled={submitting}
-            className="w-20 rounded-full bg-white py-1.5 text-center text-xs font-bold text-danger disabled:opacity-60"
+            className="w-24 rounded-full bg-white py-2 text-center text-sm font-bold text-danger disabled:opacity-60"
           >
             削除
           </button>
         </div>
       </div>
-      {error && <p className="mt-1.5 text-xs font-bold text-danger">{error}</p>}
+      {error && <p className="mt-1.5 text-sm font-bold text-danger">{error}</p>}
     </div>
   );
 }

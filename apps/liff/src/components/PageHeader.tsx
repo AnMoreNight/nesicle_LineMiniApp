@@ -15,7 +15,7 @@ export function PageHeader({ title, onBack }: { title: string; onBack?: () => vo
       >
         <IconBack className="h-5 w-5" />
       </button>
-      <p className="text-base font-bold">{title}</p>
+      <p className="text-lg font-bold">{title}</p>
     </header>
   );
 }

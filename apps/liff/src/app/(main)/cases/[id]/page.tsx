@@ -29,39 +29,39 @@ export default function CaseDetailPage() {
       <PageHeader title="案件詳細" />
       <main className="space-y-4 px-5 py-5">
         <div className="flex flex-wrap gap-1.5">
-          <span className="rounded-md bg-primary-soft px-2 py-0.5 text-xs font-bold text-primary">{c.category}</span>
-          <span className="rounded-md bg-surface-muted px-2 py-0.5 text-xs font-bold text-ink-muted">{c.area}</span>
+          <span className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary">{c.category}</span>
+          <span className="rounded-md bg-surface-muted px-2 py-0.5 text-sm font-bold text-ink-muted">{c.area}</span>
         </div>
-        <h1 className="text-xl font-extrabold leading-snug">{c.title}</h1>
-        <p className="text-xs text-ink-muted">掲載企業: {c.companyName}</p>
+        <h1 className="text-2xl font-extrabold leading-snug">{c.title}</h1>
+        <p className="text-sm text-ink-muted">掲載企業: {c.companyName}</p>
 
         <div className={card}>
-          <p className="text-xs text-ink-muted">紹介報酬</p>
-          <MoneyText amount={c.rewardAmount} className="text-2xl" />
-          <span className="ml-1 text-xs font-bold text-money">({c.rewardLabel})</span>
+          <p className="text-sm text-ink-muted">紹介報酬</p>
+          <MoneyText amount={c.rewardAmount} className="text-3xl" />
+          <span className="ml-1 text-sm font-bold text-money">({c.rewardLabel})</span>
         </div>
 
         <section className="space-y-2">
-          <h2 className="text-sm font-extrabold">サービス内容</h2>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-ink">{c.description}</p>
+          <h2 className="text-base font-extrabold">サービス内容</h2>
+          <p className="whitespace-pre-line text-base leading-relaxed text-ink">{c.description}</p>
         </section>
 
         {c.eligibilityNotes && (
           <section className="space-y-1 rounded-md bg-info-soft p-3">
-            <h2 className="text-xs font-extrabold text-info">対象条件</h2>
-            <p className="text-xs leading-relaxed text-ink">{c.eligibilityNotes}</p>
+            <h2 className="text-sm font-extrabold text-info">対象条件</h2>
+            <p className="text-sm leading-relaxed text-ink">{c.eligibilityNotes}</p>
           </section>
         )}
         {c.ineligibleNotes && (
           <section className="space-y-1 rounded-md bg-warning-soft p-3">
-            <h2 className="text-xs font-extrabold text-warning">対象外となる場合</h2>
-            <p className="text-xs leading-relaxed text-ink">{c.ineligibleNotes}</p>
+            <h2 className="text-sm font-extrabold text-warning">対象外となる場合</h2>
+            <p className="text-sm leading-relaxed text-ink">{c.ineligibleNotes}</p>
           </section>
         )}
         {c.rewardTimingNotes && (
           <section className="space-y-1 rounded-md bg-money-soft p-3">
-            <h2 className="text-xs font-extrabold text-money">報酬が確定するタイミング</h2>
-            <p className="text-xs leading-relaxed text-ink">{c.rewardTimingNotes}</p>
+            <h2 className="text-sm font-extrabold text-money">報酬が確定するタイミング</h2>
+            <p className="text-sm leading-relaxed text-ink">{c.rewardTimingNotes}</p>
           </section>
         )}
       </main>

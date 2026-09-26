@@ -14,15 +14,15 @@ function Section({ title, items }: { title: string; items: ReferrerApplicationDt
   if (items.length === 0) return null;
   return (
     <section>
-      <p className="mb-3 text-sm font-extrabold text-ink-muted">{title}</p>
+      <p className="mb-3 text-base font-extrabold text-ink-muted">{title}</p>
       <div className="space-y-2">
         {items.map((a) => (
           <div key={a.id} className={clsx(card, "flex items-center justify-between")}>
             <div>
-              <p className="text-sm font-bold">{a.caseTitle}</p>
-              <p className="text-xs text-ink-muted">{a.applicantName} さん</p>
+              <p className="text-base font-bold">{a.caseTitle}</p>
+              <p className="text-sm text-ink-muted">{a.applicantName} さん</p>
             </div>
-            {a.rewardAmount != null ? <MoneyText amount={a.rewardAmount} /> : <span className="text-xs text-ink-muted">査定中</span>}
+            {a.rewardAmount != null ? <MoneyText amount={a.rewardAmount} className="text-lg" /> : <span className="text-sm text-ink-muted">査定中</span>}
           </div>
         ))}
       </div>
@@ -47,9 +47,9 @@ export default function RewardsPage() {
       <TopBar title="報酬" />
       <main className="space-y-6 px-5 py-5">
         <section className="rounded-lg bg-ink p-5 text-white shadow-float">
-          <p className="text-xs font-bold text-white/70">累計報酬(確定+支払済み)</p>
-          <p className="mt-1 text-3xl font-extrabold tabular-nums">{formatYen(rewards?.lifetimeTotal ?? 0)}</p>
-          <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs font-bold">
+          <p className="text-sm font-bold text-white/70">累計報酬(確定+支払済み)</p>
+          <p className="mt-1 text-4xl font-extrabold tabular-nums">{formatYen(rewards?.lifetimeTotal ?? 0)}</p>
+          <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm font-bold">
             <div className="rounded-md bg-white/10 py-2">
               <p className="text-white/60">未確定</p>
               <p className="mt-0.5">{formatYen(rewards?.unconfirmedTotal ?? 0)}</p>
@@ -67,8 +67,8 @@ export default function RewardsPage() {
 
         {!rewards?.hasBankAccount && (
           <div className={clsx(card, "flex items-center justify-between gap-3 border-warning/40 bg-warning-soft")}>
-            <p className="text-xs font-bold text-warning">報酬の受け取りには振込先口座の登録が必要です</p>
-            <Link href="/mypage/bank" className={clsx(btnPrimary, "!px-3 !py-2 text-xs")}>
+            <p className="text-sm font-bold text-warning">報酬の受け取りには振込先口座の登録が必要です</p>
+            <Link href="/mypage/bank" className={clsx(btnPrimary, "!px-3 !py-2 text-sm")}>
               登録する
             </Link>
           </div>

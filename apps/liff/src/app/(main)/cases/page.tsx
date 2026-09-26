@@ -29,7 +29,7 @@ export default function CasesPage() {
               key={cat}
               onClick={() => setCategory(cat)}
               className={clsx(
-                "shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold",
+                "shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-bold",
                 category === cat ? "border-primary bg-primary text-white" : "border-border bg-surface text-ink-muted",
               )}
             >

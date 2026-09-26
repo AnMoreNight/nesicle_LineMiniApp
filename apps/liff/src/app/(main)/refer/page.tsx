@@ -86,8 +86,8 @@ function ReferContent() {
     <div>
       <div className="sticky top-0 z-10">
         <div className="border-b border-border bg-surface px-5 pb-4 pt-4">
-          <p className="text-lg font-extrabold tracking-tight">紹介する</p>
-          <p className="mt-0.5 text-xs text-ink-muted">案件にチェックを入れて紹介URLを発行します</p>
+          <p className="text-xl font-extrabold tracking-tight">紹介する</p>
+          <p className="mt-0.5 text-sm text-ink-muted">案件にチェックを入れて紹介URLを発行します</p>
         </div>
 
         {checkedItems.length > 0 && (
@@ -99,7 +99,7 @@ function ReferContent() {
 
       <main className="space-y-6 px-5 py-5">
         <section>
-          <p className="mb-3 text-sm font-extrabold text-ink-muted">案件を選択</p>
+          <p className="mb-3 text-base font-extrabold text-ink-muted">案件を選択</p>
           {items.length === 0 ? (
             <EmptyState
               icon="📋"
@@ -122,12 +122,12 @@ function ReferContent() {
         </section>
 
         <section>
-          <p className="mb-3 text-sm font-extrabold text-ink-muted">発行済みの紹介URL</p>
-          {deleteError && <p className="mb-3 text-xs font-bold text-danger">{deleteError}</p>}
+          <p className="mb-3 text-base font-extrabold text-ink-muted">発行済みの紹介URL</p>
+          {deleteError && <p className="mb-3 text-sm font-bold text-danger">{deleteError}</p>}
           {historyLoading ? (
             <PageSpinner />
           ) : !history || history.length === 0 ? (
-            <p className="text-sm text-ink-muted">まだ紹介URLを発行していません。</p>
+            <p className="text-base text-ink-muted">まだ紹介URLを発行していません。</p>
           ) : (
             <div className="space-y-3">
               {history.map((link) => (

@@ -35,7 +35,7 @@ export default function ProgressPage() {
               key={f.key}
               onClick={() => setFilter(f.key)}
               className={clsx(
-                "shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold",
+                "shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-bold",
                 filter === f.key ? "border-primary bg-primary text-white" : "border-border bg-surface text-ink-muted",
               )}
             >
@@ -54,21 +54,21 @@ export default function ProgressPage() {
               <div key={a.id} className={card}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="text-sm font-bold">{a.applicantName} さん</p>
-                    <p className="text-xs text-ink-muted">{a.caseTitle}</p>
+                    <p className="text-base font-bold">{a.applicantName} さん</p>
+                    <p className="text-sm text-ink-muted">{a.caseTitle}</p>
                   </div>
                   <ProgressBadge status={a.progressStatus} />
                 </div>
                 <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                   <RewardBadge status={a.rewardStatus} />
-                  {a.rewardAmount != null && <MoneyText amount={a.rewardAmount} />}
+                  {a.rewardAmount != null && <MoneyText amount={a.rewardAmount} className="text-lg" />}
                 </div>
                 {a.ineligibleReason && (
-                  <p className="mt-2 rounded-md bg-surface-muted px-2.5 py-1.5 text-xs text-ink-muted">
+                  <p className="mt-2 rounded-md bg-surface-muted px-2.5 py-1.5 text-sm text-ink-muted">
                     対象外理由: {a.ineligibleReason}
                   </p>
                 )}
-                <p className="mt-2 text-[11px] text-ink-muted">
+                <p className="mt-2 text-xs text-ink-muted">
                   紹介日: {new Date(a.referredAt).toLocaleDateString("ja-JP")}
                 </p>
               </div>

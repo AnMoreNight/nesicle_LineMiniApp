@@ -11,8 +11,8 @@ export function TopBar({ title, subtitle }: { title: string; subtitle?: string }
     <header className="sticky top-0 z-10 border-b border-border bg-surface px-5 pb-3 pt-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-lg font-extrabold tracking-tight">{title}</p>
-          {subtitle && <p className="mt-0.5 text-xs text-ink-muted">{subtitle}</p>}
+          <p className="text-xl font-extrabold tracking-tight">{title}</p>
+          {subtitle && <p className="mt-0.5 text-sm text-ink-muted">{subtitle}</p>}
         </div>
         <Link
           href="/mypage"
