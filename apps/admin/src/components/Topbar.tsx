@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAdminAuth } from "@/lib/auth-context";
 import { ChangePasswordModal } from "@/components/ChangePasswordModal";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export function Topbar() {
   const { admin, logout } = useAdminAuth();
@@ -11,6 +12,7 @@ export function Topbar() {
   return (
     <header className="flex h-16 shrink-0 items-center justify-end border-b border-border bg-surface px-8">
       <div className="flex items-center gap-4">
+        <NotificationBell />
         <span className="text-sm text-ink">
           <span className="text-ink-muted">ログイン中: </span>
           <span className="font-medium">{admin.displayName}</span>

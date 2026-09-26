@@ -10,6 +10,8 @@ const querySchema = z.object({
   caseId: z.string().optional(),
   referrerId: z.string().optional(),
   q: z.string().optional(),
+  // Used by the admin notification poller: only applications created after this ISO timestamp.
+  createdAfter: z.string().datetime().optional(),
 });
 
 function buildWhere(query: z.infer<typeof querySchema>): Prisma.ApplicationWhereInput {
@@ -19,6 +21,7 @@ function buildWhere(query: z.infer<typeof querySchema>): Prisma.ApplicationWhere
     caseId: query.caseId,
     referralLink: query.referrerId ? { referrerId: query.referrerId } : undefined,
     applicant: query.q ? { fullName: { contains: query.q, mode: "insensitive" } } : undefined,
+    createdAt: query.createdAfter ? { gt: new Date(query.createdAfter) } : undefined,
   };
 }
 
