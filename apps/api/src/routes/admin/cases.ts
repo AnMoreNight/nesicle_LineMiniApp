@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { prisma } from "@nesicle/db";
+import { prisma, Prisma } from "@nesicle/db";
 import { requireAdmin } from "../../lib/auth.js";
 
 const caseSchema = z.object({
@@ -67,5 +67,23 @@ export default async function adminCasesRoutes(app: FastifyInstance) {
   app.post("/api/admin/cases/:id/suspend", async (request) => {
     const { id } = request.params as { id: string };
     return prisma.case.update({ where: { id }, data: { status: "SUSPENDED" } });
+  });
+
+  app.delete("/api/admin/cases/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    try {
+      await prisma.case.delete({ where: { id } });
+    } catch (err) {
+      // FK violation — this case has referral links or applications tied to it already.
+      // Deleting those too would destroy real referral/reward history, so refuse and point
+      // the admin at "suspend" (soft-delete) instead of silently cascading.
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
+        return reply
+          .code(409)
+          .send({ error: "この案件は紹介URLまたは申込に紐づいているため削除できません。代わりに「停止する」を使用してください。" });
+      }
+      throw err;
+    }
+    return { ok: true };
   });
 }

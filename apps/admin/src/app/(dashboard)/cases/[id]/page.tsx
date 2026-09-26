@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { Button, Card, ErrorState, LoadingState, PageHeader } from "@/components/ui";
 import { CaseStatusBadge } from "@/components/StatusBadge";
@@ -10,6 +10,7 @@ import type { CaseBase, CaseInput, CaseWithCompany, CompanyBase } from "@/types/
 
 export default function CaseDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const caseId = params.id;
 
   const [caseData, setCaseData] = useState<CaseWithCompany | null>(null);
@@ -67,6 +68,19 @@ export default function CaseDetailPage() {
     }
   }
 
+  async function handleDelete() {
+    if (!window.confirm("この案件を削除しますか?この操作は取り消せません。")) return;
+    setActionError(null);
+    setActionPending(true);
+    try {
+      await api.delete(`/api/admin/cases/${caseId}`);
+      router.push("/cases");
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "削除に失敗しました。");
+      setActionPending(false);
+    }
+  }
+
   if (error) {
     return (
       <div>
@@ -102,6 +116,9 @@ export default function CaseDetailPage() {
                 停止する
               </Button>
             ) : null}
+            <Button variant="danger" onClick={handleDelete} disabled={actionPending}>
+              削除する
+            </Button>
           </>
         }
       />

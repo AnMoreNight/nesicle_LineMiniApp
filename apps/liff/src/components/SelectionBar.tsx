@@ -1,61 +1,84 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { ReferralLinkDto } from "@nesicle/shared";
+import type { CaseSummaryDto, ReferralLinkDto } from "@nesicle/shared";
 import { useCartStore } from "@/lib/cartStore";
 import { api, ApiError } from "@/lib/api";
 
-export function SelectionBar({ onIssued }: { onIssued?: () => void }) {
-  const items = useCartStore((s) => s.items);
-  const clear = useCartStore((s) => s.clear);
+export function SelectionBar({
+  checkedItems,
+  onDone,
+  onIssued,
+}: {
+  /** The currently-checked subset of the /refer page's queue list — issue/delete act only on these. */
+  checkedItems: CaseSummaryDto[];
+  /** Called with the acted-on case ids after a successful issue or delete, so the page can
+   *  un-check them (they're no longer in the queue, so there's nothing left to have checked). */
+  onDone: (caseIds: string[]) => void;
+  onIssued?: () => void;
+}) {
+  const removeMany = useCartStore((s) => s.removeMany);
+  const removeLocal = useCartStore((s) => s.removeLocal);
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // setSubmitting(true) doesn't disable the button in the DOM until React commits the render,
+  // which lags a fast double-click by a frame or two — this ref blocks re-entry synchronously,
+  // the instant the second click fires, so "issue"/"delete" can never fire twice in a row.
+  const busyRef = useRef(false);
 
-  if (items.length === 0) return null;
+  if (checkedItems.length === 0) return null;
 
   async function handleIssue() {
+    if (busyRef.current) return;
+    busyRef.current = true;
     setSubmitting(true);
     setError(null);
+    const ids = checkedItems.map((c) => c.id);
     try {
-      const link = await api.post<ReferralLinkDto>("/api/referral-links", {
-        caseIds: items.map((c) => c.id),
-      });
-      // The backend already clears matching selection rows when the link is created, so this
-      // is just keeping local state in sync — not critical if it fails.
-      clear().catch(() => {});
+      const link = await api.post<ReferralLinkDto>("/api/referral-links", { caseIds: ids });
+      // The backend already deleted the matching queue rows when the link was created;
+      // this just resets local state to match, no extra API call needed.
+      removeLocal(ids);
+      onDone(ids);
       onIssued?.();
       router.push(`/refer?justCreated=${link.id}`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "紹介URLの発行に失敗しました。");
     } finally {
+      busyRef.current = false;
       setSubmitting(false);
     }
   }
 
   async function handleClear() {
+    if (busyRef.current) return;
+    busyRef.current = true;
     setSubmitting(true);
     setError(null);
+    const ids = checkedItems.map((c) => c.id);
     try {
-      await clear();
+      await removeMany(ids);
+      onDone(ids);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "選択の削除に失敗しました。もう一度お試しください。");
     } finally {
+      busyRef.current = false;
       setSubmitting(false);
     }
   }
 
   return (
     <div>
-      <div className="flex items-center gap-2 rounded-full bg-primary-soft py-1.5 pl-4 pr-1.5">
-        <span className="text-xs font-bold text-primary">{items.length}件選択中</span>
+      <div className="flex items-center gap-2 rounded-full bg-primary py-1.5 pl-4 pr-1.5">
+        <span className="text-xs font-bold text-white">{checkedItems.length}件選択中</span>
         <div className="ml-auto flex gap-1.5">
           <button
             type="button"
             onClick={handleIssue}
             disabled={submitting}
-            className="rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-white disabled:opacity-60"
+            className="w-20 rounded-full bg-white py-1.5 text-center text-xs font-bold text-primary disabled:opacity-60"
           >
             {submitting ? "発行中…" : "URLを発行"}
           </button>
@@ -63,7 +86,7 @@ export function SelectionBar({ onIssued }: { onIssued?: () => void }) {
             type="button"
             onClick={handleClear}
             disabled={submitting}
-            className="rounded-full border border-danger/40 bg-surface px-3 py-1.5 text-xs font-bold text-danger disabled:opacity-60"
+            className="w-20 rounded-full bg-white py-1.5 text-center text-xs font-bold text-danger disabled:opacity-60"
           >
             削除
           </button>

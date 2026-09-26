@@ -10,6 +10,11 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(8, "新しいパスワードは8文字以上で入力してください。"),
+});
+
 // Admin console is normally accessed same-site (plain localhost), unlike the LIFF app.
 const COOKIE_OPTIONS = cookieOptions(60 * 60 * 12, false);
 
@@ -36,5 +41,19 @@ export default async function adminAuthRoutes(app: FastifyInstance) {
   app.get("/api/admin/auth/me", { preHandler: requireAdmin }, async (request) => {
     const admin = await prisma.adminUser.findUniqueOrThrow({ where: { id: request.adminId } });
     return { id: admin.id, email: admin.email, displayName: admin.displayName };
+  });
+
+  app.put("/api/admin/auth/password", { preHandler: requireAdmin }, async (request, reply) => {
+    const parsed = changePasswordSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: parsed.error.issues[0]?.message ?? "入力内容を確認してください。" });
+    }
+    const admin = await prisma.adminUser.findUniqueOrThrow({ where: { id: request.adminId } });
+    if (!(await bcrypt.compare(parsed.data.currentPassword, admin.passwordHash))) {
+      return reply.code(401).send({ error: "現在のパスワードが正しくありません。" });
+    }
+    const passwordHash = await bcrypt.hash(parsed.data.newPassword, 10);
+    await prisma.adminUser.update({ where: { id: admin.id }, data: { passwordHash } });
+    return { ok: true };
   });
 }
