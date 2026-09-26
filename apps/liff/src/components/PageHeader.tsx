@@ -10,12 +10,12 @@ export function PageHeader({ title, onBack }: { title: string; onBack?: () => vo
       <button
         type="button"
         onClick={() => (onBack ? onBack() : router.back())}
-        className="flex h-10 w-10 items-center justify-center rounded-full text-ink-muted active:bg-surface-muted"
+        className="flex h-9 w-9 items-center justify-center rounded-full text-ink-muted active:bg-surface-muted"
         aria-label="戻る"
       >
-        <IconBack className="h-6 w-6" />
+        <IconBack className="h-5 w-5" />
       </button>
-      <p className="text-xl font-bold">{title}</p>
+      <p className="text-lg font-bold">{title}</p>
     </header>
   );
 }

@@ -28,14 +28,14 @@ export default function ProgressPage() {
   return (
     <div>
       <TopBar title="紹介状況" subtitle={`累計 ${data?.length ?? 0}件を紹介`} />
-      <main className="space-y-4 px-5 py-4">
+      <main className="space-y-4 px-5 py-5">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {FILTERS.map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
               className={clsx(
-                "shrink-0 rounded-full border px-4 py-2 text-base font-bold",
+                "shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-bold",
                 filter === f.key ? "border-primary bg-primary text-white" : "border-border bg-surface text-ink-muted",
               )}
             >
@@ -54,21 +54,21 @@ export default function ProgressPage() {
               <div key={a.id} className={card}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="text-lg font-bold">{a.applicantName} さん</p>
-                    <p className="text-base text-ink-muted">{a.caseTitle}</p>
+                    <p className="text-base font-bold">{a.applicantName} さん</p>
+                    <p className="text-sm text-ink-muted">{a.caseTitle}</p>
                   </div>
                   <ProgressBadge status={a.progressStatus} />
                 </div>
                 <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                   <RewardBadge status={a.rewardStatus} />
-                  {a.rewardAmount != null && <MoneyText amount={a.rewardAmount} className="text-xl" />}
+                  {a.rewardAmount != null && <MoneyText amount={a.rewardAmount} className="text-lg" />}
                 </div>
                 {a.ineligibleReason && (
-                  <p className="mt-2 rounded-md bg-surface-muted px-2.5 py-1.5 text-base text-ink-muted">
+                  <p className="mt-2 rounded-md bg-surface-muted px-2.5 py-1.5 text-sm text-ink-muted">
                     対象外理由: {a.ineligibleReason}
                   </p>
                 )}
-                <p className="mt-2 text-sm text-ink-muted">
+                <p className="mt-2 text-xs text-ink-muted">
                   紹介日: {new Date(a.referredAt).toLocaleDateString("ja-JP")}
                 </p>
               </div>

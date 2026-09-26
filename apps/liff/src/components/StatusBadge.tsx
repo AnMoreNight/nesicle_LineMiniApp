@@ -21,7 +21,7 @@ const REWARD_STYLE: Record<RewardStatus, string> = {
 
 function Badge({ className, children }: { className: string; children: string }) {
   return (
-    <span className={clsx("inline-block whitespace-nowrap rounded-full px-3 py-1.5 text-base font-bold", className)}>
+    <span className={clsx("inline-block whitespace-nowrap rounded-full px-2.5 py-1 text-sm font-bold", className)}>
       {children}
     </span>
   );
