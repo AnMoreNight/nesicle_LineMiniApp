@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/PageHeader";
 
-export const metadata = { title: "利用規約 | ネシクル パートナー" };
+export const metadata = { title: "利用規約 | OPTAS パートナー" };
 
 export default function TermsPage() {
   return (
@@ -12,7 +12,7 @@ export default function TermsPage() {
         <section className="space-y-2">
           <h2 className="font-bold">第1条(適用)</h2>
           <p>
-            本規約は、株式会社ネシクル(以下「当社」といいます)が提供する紹介マーケティングサービス「ネシクル
+            本規約は、株式会社OPTAS(以下「当社」といいます)が提供する紹介マーケティングサービス「OPTAS
             パートナー」(以下「本サービス」といいます)の利用条件を定めるものです。本サービスを利用する紹介者(以下「ユーザー」といいます)は、本規約に同意のうえ本サービスを利用するものとします。
           </p>
         </section>

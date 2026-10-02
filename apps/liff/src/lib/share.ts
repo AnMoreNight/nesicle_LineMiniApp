@@ -1,6 +1,6 @@
 export function buildShareMessage(url: string, caseTitles: string[]): string {
   const casesText = caseTitles.length > 1 ? `${caseTitles[0]} 他${caseTitles.length - 1}件` : caseTitles[0] ?? "";
-  return `【ネシクル】${casesText}のご紹介です。こちらからご確認ください。\n${url}`;
+  return `【OPTAS】${casesText}のご紹介です。こちらからご確認ください。\n${url}`;
 }
 
 export async function shareViaLine(url: string, message: string) {

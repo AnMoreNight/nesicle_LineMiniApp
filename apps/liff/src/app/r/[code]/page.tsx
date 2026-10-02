@@ -27,7 +27,7 @@ export default function ReferralLandingPage() {
   return (
     <div className="min-h-dvh px-6 py-10">
       <div className="mb-6 text-center">
-        <p className="text-xl font-extrabold">ネシクル</p>
+        <p className="text-xl font-extrabold">OPTAS</p>
       </div>
 
       <div className="rounded-lg bg-primary-soft px-4 py-3 text-base font-bold text-primary">
@@ -49,7 +49,7 @@ export default function ReferralLandingPage() {
       </div>
 
       <p className="mt-6 rounded-md bg-surface-muted px-3 py-2.5 text-sm leading-relaxed text-ink-muted">
-        ご入力いただく個人情報は、紹介者(ネシクル パートナー)には共有されません。内容をご確認のうえ、ご自身でお申し込みください。
+        ご入力いただく個人情報は、紹介者(OPTAS パートナー)には共有されません。内容をご確認のうえ、ご自身でお申し込みください。
       </p>
 
       <button type="button" onClick={() => router.push(`/r/${code}/apply`)} className={clsx(btnPrimary, "mt-6 w-full")}>

@@ -16,3 +16,4 @@ build/
 packages/db/generated/
 .vscode/
 *.tsbuildinfo
+logo.png

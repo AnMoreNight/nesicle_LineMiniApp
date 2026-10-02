@@ -22,7 +22,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <TopBar title="ネシクル パートナー" subtitle={user ? `${user.displayName} さん、こんにちは` : undefined} />
+      <TopBar title="OPTAS パートナー" subtitle={user ? `${user.displayName} さん、こんにちは` : undefined} />
       <main className="space-y-6 px-5 py-5">
         <section className="rounded-lg bg-gradient-to-br from-primary to-[#048848] p-5 text-white shadow-float">
           <p className="text-sm font-bold opacity-80">これまでの確定報酬</p>

@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/PageHeader";
 
-export const metadata = { title: "プライバシーポリシー | ネシクル パートナー" };
+export const metadata = { title: "プライバシーポリシー | OPTAS パートナー" };
 
 export default function PrivacyPage() {
   return (
