@@ -10,8 +10,8 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "ネシクル管理コンソール",
-  description: "ネシクル 運営管理コンソール",
+  title: "OPTAS管理コンソール",
+  description: "OPTAS 運営管理コンソール",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

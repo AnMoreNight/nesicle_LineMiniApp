@@ -11,8 +11,8 @@ const notoSansJp = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "ネシクル パートナー",
-  description: "紹介するだけで報酬がもらえる、ネシクルの紹介者向けLINEミニアプリ",
+  title: "OPTAS パートナー",
+  description: "紹介するだけで報酬がもらえる、OPTASの紹介者向けLINEミニアプリ",
 };
 
 export const viewport: Viewport = {

@@ -68,7 +68,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-dvh flex-col justify-center px-6 py-10">
       <div className="mb-8 text-center">
-        <p className="text-2xl font-extrabold">ネシクル パートナー</p>
+        <p className="text-2xl font-extrabold">OPTAS パートナー</p>
         <p className="mt-2 text-sm text-ink-muted">紹介するだけで報酬がもらえる、紹介者向けLINEミニアプリ</p>
       </div>
 

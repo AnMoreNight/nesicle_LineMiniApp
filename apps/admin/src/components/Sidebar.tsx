@@ -18,7 +18,7 @@ export function Sidebar() {
   return (
     <aside className="flex h-screen w-56 shrink-0 flex-col bg-ink py-6">
       <div className="mb-8 px-6">
-        <span className="text-lg font-extrabold tracking-wide text-white">ネシクル管理</span>
+        <span className="text-lg font-extrabold tracking-wide text-white">OPTAS管理</span>
       </div>
       <nav className="flex flex-1 flex-col gap-1 px-3">
         {NAV_ITEMS.map((item) => {

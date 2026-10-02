@@ -29,7 +29,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg px-4">
       <div className="w-full max-w-sm rounded-lg border border-border bg-surface p-8 shadow-card">
-        <h1 className="mb-1 text-lg font-extrabold text-ink">ネシクル管理コンソール</h1>
+        <h1 className="mb-1 text-lg font-extrabold text-ink">OPTAS管理コンソール</h1>
         <p className="mb-6 text-sm text-ink-muted">運営スタッフ用ログイン</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Field label="メールアドレス">
