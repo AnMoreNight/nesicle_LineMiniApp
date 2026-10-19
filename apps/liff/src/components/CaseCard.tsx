@@ -41,7 +41,7 @@ export function CaseCard({
         {item.rewardLabel && <span className="ml-1 text-sm font-bold text-money">({item.rewardLabel})</span>}
       </div>
       <div className="mt-2.5 flex gap-2">
-        <Link href={`/cases/${item.id}`} className={clsx(btnSecondary, "flex-1 !py-2.5")}>
+        <Link href={`/cases/${item.id}`} className={clsx(btnSecondary, "flex-1 !py-2 text-sm")}>
           詳細
         </Link>
         {showAddButton ? (
@@ -49,7 +49,7 @@ export function CaseCard({
             type="button"
             onClick={() => onToggleCart?.(item)}
             className={clsx(
-              "flex-1 rounded-md !py-2.5 text-base font-bold transition",
+              "flex-1 rounded-md py-2 text-sm font-bold transition",
               inCart ? "bg-primary text-white" : "border border-primary text-primary",
             )}
           >

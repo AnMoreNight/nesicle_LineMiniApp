@@ -1,14 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_JP } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
-
-const notoSansJp = Noto_Sans_JP({
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-  variable: "--font-noto-sans-jp",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "OPTAS パートナー",
@@ -23,7 +15,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja" className={notoSansJp.variable}>
+    <html lang="ja">
       <body className="font-sans">
         <Providers>
           <div className="app-viewport">{children}</div>

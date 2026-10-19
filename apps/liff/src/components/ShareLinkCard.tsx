@@ -7,7 +7,7 @@ import { btnLine, btnSecondary, card } from "@/lib/ui";
 import { IconCopy, IconTrash } from "./icons";
 import clsx from "clsx";
 
-const iconBtn = "flex h-10 w-10 shrink-0 items-center justify-center rounded-md border transition active:scale-[.98]";
+const iconBtn = "flex h-9 w-9 shrink-0 items-center justify-center rounded-md border transition active:scale-[.98]";
 
 export function ShareLinkCard({
   link,
@@ -40,14 +40,14 @@ export function ShareLinkCard({
         <button
           type="button"
           onClick={() => shareViaLine(link.url, message)}
-          className={clsx(btnLine, "flex-1 !px-2 text-sm")}
+          className={clsx(btnLine, "h-9 flex-1 !px-2 !py-0 text-sm")}
         >
           LINEで送る
         </button>
         <button
           type="button"
           onClick={() => shareViaSms(message)}
-          className={clsx(btnSecondary, "flex-1 !px-2 text-sm")}
+          className={clsx(btnSecondary, "h-9 flex-1 !px-2 !py-0 text-sm")}
         >
           SMSで送る
         </button>
