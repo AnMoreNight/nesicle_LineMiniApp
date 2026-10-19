@@ -41,6 +41,18 @@ enum BankAccountType {
   CHECKING
 }
 
+/// 紹介者への振込申請の状態
+enum PayoutRequestStatus {
+  PENDING
+  PAID
+}
+
+/// 報酬の受取方法。初期リリースは銀行振込のみだが、将来的に PayPay ポイントや
+/// デジタルギフト等を追加できるよう、値を増やすだけで対応できる形にしておく。
+enum PayoutMethod {
+  BANK_TRANSFER
+}
+
 /// LINEユーザー情報 (紹介者としてログインした人物)
 model User {
   id          String   @id @default(cuid())
@@ -53,6 +65,7 @@ model User {
   referrerProfile     ReferrerProfile?
   referralLinks       ReferralLink[]
   referralSelections  ReferralSelection[]
+  payoutRequests      PayoutRequest[]
 
   @@map("users")
 }
@@ -204,14 +217,38 @@ model Application {
   rewardAmount     Int?
   ineligibleReason String?
   internalNotes    String         @default("")
+  // 紹介者(パートナー)がワンタッチで行う「完了報告」の日時。これ自体は報酬確定を意味せず、
+  // 運営が掲載企業へ成果確認を行うきっかけとなるシグナル。null なら未報告。
+  referrerReportedAt DateTime?
+  // この申込の報酬がどの振込申請にまとめられたか。null ならまだ未申請。
+  payoutRequestId  String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
-  applicant    Applicant    @relation(fields: [applicantId], references: [id])
-  case         Case         @relation(fields: [caseId], references: [id])
-  referralLink ReferralLink @relation(fields: [referralLinkId], references: [id])
+  applicant     Applicant      @relation(fields: [applicantId], references: [id])
+  case          Case           @relation(fields: [caseId], references: [id])
+  referralLink  ReferralLink   @relation(fields: [referralLinkId], references: [id])
+  payoutRequest PayoutRequest? @relation(fields: [payoutRequestId], references: [id])
 
   @@map("applications")
+}
+
+/// 紹介者からの報酬受取申請。完了報告 + 運営側の成果確認が完了し報酬が確定した申込だけを
+/// まとめて申請できる。受取方法(method)は今は銀行振込のみだが、将来 PayPay ポイントや
+/// デジタルギフト等を追加しやすいよう enum で持たせてある。
+model PayoutRequest {
+  id          String              @id @default(cuid())
+  userId      String
+  amount      Int
+  method      PayoutMethod        @default(BANK_TRANSFER)
+  status      PayoutRequestStatus @default(PENDING)
+  requestedAt DateTime            @default(now())
+  paidAt      DateTime?
+
+  user         User          @relation(fields: [userId], references: [id])
+  applications Application[]
+
+  @@map("payout_requests")
 }
 
 /// 規約同意情報

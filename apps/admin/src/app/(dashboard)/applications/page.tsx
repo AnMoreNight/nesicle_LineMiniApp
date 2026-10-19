@@ -28,6 +28,7 @@ export default function ApplicationsPage() {
   const [rewardStatus, setRewardStatus] = useState("");
   const [caseId, setCaseId] = useState("");
   const [referrerId, setReferrerId] = useState("");
+  const [reported, setReported] = useState("");
   const [q, setQ] = useState("");
   const [qInput, setQInput] = useState("");
 
@@ -51,10 +52,11 @@ export default function ApplicationsPage() {
       rewardStatus: rewardStatus || undefined,
       caseId: caseId || undefined,
       referrerId: referrerId || undefined,
+      reported: reported || undefined,
       q: q || undefined,
     };
     return params;
-  }, [progressStatus, rewardStatus, caseId, referrerId, q]);
+  }, [progressStatus, rewardStatus, caseId, referrerId, reported, q]);
 
   useEffect(() => {
     setApplications(null);
@@ -115,6 +117,11 @@ export default function ApplicationsPage() {
             </option>
           ))}
         </Select>
+        <Select value={reported} onChange={(e) => setReported(e.target.value)} className="w-auto">
+          <option value="">完了報告: すべて</option>
+          <option value="yes">完了報告あり</option>
+          <option value="no">完了報告なし</option>
+        </Select>
         <Input
           placeholder="申込者名で検索"
           value={qInput}
@@ -148,7 +155,14 @@ export default function ApplicationsPage() {
                   onClick={() => setSelected(a)}
                   className="cursor-pointer border-b border-border last:border-0 hover:bg-surface-muted"
                 >
-                  <td className="px-4 py-3 font-medium text-ink">{a.applicant.fullName}</td>
+                  <td className="px-4 py-3 font-medium text-ink">
+                    {a.applicant.fullName}
+                    {a.referrerReportedAt ? (
+                      <span className="ml-1.5 rounded-sm bg-info-soft px-1.5 py-0.5 text-xs font-bold text-info">
+                        報告済
+                      </span>
+                    ) : null}
+                  </td>
                   <td className="px-4 py-3">
                     <div>{a.case.title}</div>
                     <div className="text-ink-muted">{a.case.company.name}</div>

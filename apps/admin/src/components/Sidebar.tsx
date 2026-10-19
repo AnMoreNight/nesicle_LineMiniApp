@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/companies", label: "掲載企業" },
   { href: "/referrers", label: "紹介者" },
   { href: "/applicants", label: "応募者" },
+  { href: "/payouts", label: "振込申請" },
 ];
 
 export function Sidebar() {

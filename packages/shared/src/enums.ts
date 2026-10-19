@@ -38,3 +38,16 @@ export const BankAccountType = {
   CHECKING: "CHECKING",
 } as const;
 export type BankAccountType = (typeof BankAccountType)[keyof typeof BankAccountType];
+
+/** 振込申請の状態 */
+export const PayoutRequestStatus = {
+  PENDING: "PENDING",
+  PAID: "PAID",
+} as const;
+export type PayoutRequestStatus = (typeof PayoutRequestStatus)[keyof typeof PayoutRequestStatus];
+
+/** 報酬の受取方法。初期は銀行振込のみ。将来 PayPay ポイント等を追加する余地を残す。 */
+export const PayoutMethod = {
+  BANK_TRANSFER: "BANK_TRANSFER",
+} as const;
+export type PayoutMethod = (typeof PayoutMethod)[keyof typeof PayoutMethod];

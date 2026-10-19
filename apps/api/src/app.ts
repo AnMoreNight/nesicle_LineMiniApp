@@ -8,6 +8,7 @@ import referralLinksRoutes from "./routes/referralLinks.js";
 import selectionRoutes from "./routes/selection.js";
 import applicationsRoutes from "./routes/applications.js";
 import rewardsRoutes from "./routes/rewards.js";
+import payoutsRoutes from "./routes/payouts.js";
 import profileRoutes from "./routes/profile.js";
 import consentRoutes from "./routes/consent.js";
 import publicRoutes from "./routes/public.js";
@@ -17,6 +18,7 @@ import adminCasesRoutes from "./routes/admin/cases.js";
 import adminReferrersRoutes from "./routes/admin/referrers.js";
 import adminApplicantsRoutes from "./routes/admin/applicants.js";
 import adminApplicationsRoutes from "./routes/admin/applications.js";
+import adminPayoutsRoutes from "./routes/admin/payouts.js";
 import adminStatsRoutes from "./routes/admin/stats.js";
 
 export async function buildApp() {
@@ -36,6 +38,7 @@ export async function buildApp() {
   await app.register(selectionRoutes);
   await app.register(applicationsRoutes);
   await app.register(rewardsRoutes);
+  await app.register(payoutsRoutes);
   await app.register(profileRoutes);
   await app.register(consentRoutes);
   await app.register(publicRoutes);
@@ -46,6 +49,7 @@ export async function buildApp() {
   await app.register(adminReferrersRoutes);
   await app.register(adminApplicantsRoutes);
   await app.register(adminApplicationsRoutes);
+  await app.register(adminPayoutsRoutes);
   await app.register(adminStatsRoutes);
 
   return app;

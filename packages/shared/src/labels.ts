@@ -1,4 +1,4 @@
-import { CaseStatus, ProgressStatus, RewardStatus, BankAccountType } from "./enums";
+import { CaseStatus, ProgressStatus, RewardStatus, BankAccountType, PayoutRequestStatus, PayoutMethod } from "./enums";
 
 export const CASE_STATUS_LABEL_JA: Record<CaseStatus, string> = {
   DRAFT: "下書き",
@@ -22,4 +22,13 @@ export const REWARD_STATUS_LABEL_JA: Record<RewardStatus, string> = {
 export const BANK_ACCOUNT_TYPE_LABEL_JA: Record<BankAccountType, string> = {
   ORDINARY: "普通",
   CHECKING: "当座",
+};
+
+export const PAYOUT_REQUEST_STATUS_LABEL_JA: Record<PayoutRequestStatus, string> = {
+  PENDING: "申請中",
+  PAID: "支払済み",
+};
+
+export const PAYOUT_METHOD_LABEL_JA: Record<PayoutMethod, string> = {
+  BANK_TRANSFER: "銀行振込",
 };

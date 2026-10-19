@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import type { ReferrerApplicationDto, RewardsSummaryDto } from "@nesicle/shared";
-import { formatYen } from "@nesicle/shared";
+import type { PayoutRequestDto, ReferrerApplicationDto, RewardsSummaryDto } from "@nesicle/shared";
+import { formatYen, PAYOUT_REQUEST_STATUS_LABEL_JA } from "@nesicle/shared";
 import { TopBar } from "@/components/TopBar";
 import { PageSpinner } from "@/components/Spinner";
 import { MoneyText } from "@/components/MoneyText";
 import { useApiGet } from "@/lib/useApiGet";
+import { api, ApiError } from "@/lib/api";
 import { card, btnPrimary } from "@/lib/ui";
 import clsx from "clsx";
 
@@ -30,8 +32,81 @@ function Section({ title, items }: { title: string; items: ReferrerApplicationDt
   );
 }
 
+function PayoutSection({
+  rewards,
+  unreportedConfirmedCount,
+  reload,
+}: {
+  rewards: RewardsSummaryDto;
+  unreportedConfirmedCount: number;
+  reload: () => void;
+}) {
+  const { data: requests, reload: reloadRequests } = useApiGet<PayoutRequestDto[]>("/api/me/payout-requests");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const eligible = rewards.payoutEligibleTotal;
+
+  async function handleRequest() {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await api.post("/api/me/payout-requests");
+      reload();
+      reloadRequests();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "振込申請に失敗しました。");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <section className={clsx(card, "space-y-3")}>
+      <div className="flex items-center justify-between">
+        <p className="text-base font-extrabold">振込申請できる報酬</p>
+        <MoneyText amount={eligible} className="text-xl" />
+      </div>
+
+      {!rewards.hasBankAccount ? (
+        <p className="text-sm text-ink-muted">振込先口座を登録すると申請できるようになります。</p>
+      ) : eligible === 0 ? (
+        <p className="text-sm text-ink-muted">振込申請できる確定報酬はまだありません。</p>
+      ) : (
+        <button type="button" onClick={handleRequest} disabled={submitting} className={clsx(btnPrimary, "w-full")}>
+          {submitting ? "申請中…" : "振込申請する"}
+        </button>
+      )}
+      {unreportedConfirmedCount > 0 && (
+        <p className="rounded-md bg-warning-soft px-2.5 py-1.5 text-sm text-warning">
+          完了報告がまだの確定報酬が{unreportedConfirmedCount}件あります。
+          <Link href="/progress" className="font-bold underline underline-offset-2">
+            紹介状況
+          </Link>
+          から完了報告すると申請できます。
+        </p>
+      )}
+      {error && <p className="text-sm font-bold text-danger">{error}</p>}
+
+      {requests && requests.length > 0 && (
+        <div className="space-y-2 border-t border-border pt-3">
+          <p className="text-sm font-bold text-ink-muted">申請履歴</p>
+          {requests.map((r) => (
+            <div key={r.id} className="flex items-center justify-between text-sm">
+              <span className="text-ink-muted">
+                {new Date(r.requestedAt).toLocaleDateString("ja-JP")} ・ {PAYOUT_REQUEST_STATUS_LABEL_JA[r.status]}
+              </span>
+              <span className="font-bold tabular-nums">{formatYen(r.amount)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 export default function RewardsPage() {
-  const { data: rewards, loading: rewardsLoading } = useApiGet<RewardsSummaryDto>("/api/me/rewards");
+  const { data: rewards, loading: rewardsLoading, reload } = useApiGet<RewardsSummaryDto>("/api/me/rewards");
   const { data: applications, loading: appsLoading } = useApiGet<ReferrerApplicationDto[]>("/api/me/applications");
 
   if (rewardsLoading || appsLoading) return <PageSpinner />;
@@ -72,6 +147,14 @@ export default function RewardsPage() {
               登録する
             </Link>
           </div>
+        )}
+
+        {rewards && (
+          <PayoutSection
+            rewards={rewards}
+            unreportedConfirmedCount={confirmed.filter((a) => !a.referrerReportedAt).length}
+            reload={reload}
+          />
         )}
 
         <Section title="確定・未払い" items={confirmed} />

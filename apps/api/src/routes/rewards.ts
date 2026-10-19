@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "@nesicle/db";
 import type { RewardsSummaryDto } from "@nesicle/shared";
 import { requireReferrer } from "../lib/auth.js";
+import { isPayoutEligible } from "../lib/payoutEligibility.js";
 
 export default async function rewardsRoutes(app: FastifyInstance) {
   app.get("/api/me/rewards", { preHandler: requireReferrer }, async (request) => {
@@ -13,6 +14,7 @@ export default async function rewardsRoutes(app: FastifyInstance) {
     let unconfirmedTotal = 0;
     let confirmedTotal = 0;
     let paidTotal = 0;
+    let payoutEligibleTotal = 0;
 
     for (const a of applications) {
       if (a.rewardStatus === "CONFIRMED") {
@@ -22,6 +24,7 @@ export default async function rewardsRoutes(app: FastifyInstance) {
       } else if (a.progressStatus === "APPLIED" || a.progressStatus === "INTERVIEWING") {
         unconfirmedTotal += a.case.rewardAmount;
       }
+      if (isPayoutEligible(a)) payoutEligibleTotal += a.rewardAmount ?? 0;
     }
 
     const profile = await prisma.referrerProfile.findUnique({
@@ -35,6 +38,7 @@ export default async function rewardsRoutes(app: FastifyInstance) {
       paidTotal,
       lifetimeTotal: confirmedTotal + paidTotal,
       hasBankAccount: Boolean(profile?.bankAccount),
+      payoutEligibleTotal,
     };
     return summary;
   });

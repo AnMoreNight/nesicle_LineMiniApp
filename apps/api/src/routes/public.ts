@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@nesicle/db";
 import type { ReferralLandingDto } from "@nesicle/shared";
 import { serializeCaseSummary } from "../lib/serialize.js";
+import { notifyReferrer } from "../lib/lineNotify.js";
 
 const applySchema = z.object({
   fullName: z.string().min(1).max(60),
@@ -93,6 +94,9 @@ export default async function publicRoutes(app: FastifyInstance) {
         referralLinkId: link.id,
       })),
     });
+
+    // OPTASは毎日開くタイプのサービスではないため、申込発生はLINEでも通知する。
+    await notifyReferrer(link.referrerId, `紹介した方からお申し込みがありました(${selectedCaseIds.length}件)。`);
 
     return { trackingId: applicant.id, applicationCount: selectedCaseIds.length };
   });

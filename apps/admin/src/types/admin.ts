@@ -1,4 +1,11 @@
-import type { BankAccountType, CaseStatus, ProgressStatus, RewardStatus } from "@nesicle/shared";
+import type {
+  BankAccountType,
+  CaseStatus,
+  ProgressStatus,
+  RewardStatus,
+  PayoutRequestStatus,
+  PayoutMethod,
+} from "@nesicle/shared";
 
 /**
  * These types mirror exactly what apps/api/src/routes/admin/*.ts return (Prisma objects with
@@ -131,6 +138,9 @@ export interface ApplicationBase {
   rewardAmount: number | null;
   ineligibleReason: string | null;
   internalNotes: string;
+  // パートナー(紹介者)によるワンタッチ「完了報告」の日時。null なら未報告。
+  referrerReportedAt: string | null;
+  payoutRequestId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -192,4 +202,18 @@ export interface ApplicationUpdateInput {
   rewardAmount?: number | null;
   ineligibleReason?: string | null;
   internalNotes?: string;
+}
+
+/** GET /api/admin/payout-requests */
+export interface PayoutRequestListItem {
+  id: string;
+  amount: number;
+  method: PayoutMethod;
+  status: PayoutRequestStatus;
+  requestedAt: string;
+  paidAt: string | null;
+  user: UserBase & {
+    referrerProfile: (ReferrerProfileBase & { bankAccount: BankAccountBase | null }) | null;
+  };
+  applications: Array<ApplicationBase & { case: CaseBase }>;
 }

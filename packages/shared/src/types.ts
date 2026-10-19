@@ -1,4 +1,4 @@
-import type { CaseStatus, ProgressStatus, RewardStatus, BankAccountType } from "./enums";
+import type { CaseStatus, ProgressStatus, RewardStatus, BankAccountType, PayoutRequestStatus, PayoutMethod } from "./enums";
 
 export interface CaseSummaryDto {
   id: string;
@@ -37,6 +37,8 @@ export interface ReferrerApplicationDto {
   referredAt: string;
   updatedAt: string;
   ineligibleReason: string | null;
+  // 紹介者自身による「完了報告」日時。null なら未報告。
+  referrerReportedAt: string | null;
 }
 
 export interface RewardsSummaryDto {
@@ -45,6 +47,23 @@ export interface RewardsSummaryDto {
   paidTotal: number;
   lifetimeTotal: number;
   hasBankAccount: boolean;
+  // 完了報告 + 運営側の成果確認が完了し報酬が確定していて、まだ振込申請されていない報酬額
+  payoutEligibleTotal: number;
+}
+
+export interface PayoutRequestApplicationSummary {
+  caseTitle: string;
+  rewardAmount: number | null;
+}
+
+export interface PayoutRequestDto {
+  id: string;
+  amount: number;
+  method: PayoutMethod;
+  status: PayoutRequestStatus;
+  requestedAt: string;
+  paidAt: string | null;
+  applications: PayoutRequestApplicationSummary[];
 }
 
 export interface ReferrerProfileDto {

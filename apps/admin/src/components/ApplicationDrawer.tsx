@@ -106,6 +106,16 @@ export function ApplicationDrawer({ application, onClose, onUpdated }: Applicati
             }
           />
           <Row label="申込日" value={formatDate(application.createdAt)} />
+          <Row
+            label="完了報告"
+            value={
+              application.referrerReportedAt ? (
+                <span className="text-success">報告済み ({formatDateTime(application.referrerReportedAt)})</span>
+              ) : (
+                <span className="text-ink-muted">未報告</span>
+              )
+            }
+          />
           <Row label="最終更新" value={formatDateTime(application.updatedAt)} />
         </dl>
 
@@ -131,7 +141,7 @@ export function ApplicationDrawer({ application, onClose, onUpdated }: Applicati
             </Field>
           ) : null}
 
-          <Field label="報酬状況">
+          <Field label="報酬状況" hint="「確定」にするには、進捗状況を「契約成立」にし、報酬額を入力してください">
             <Select value={rewardStatus} onChange={(e) => setRewardStatus(e.target.value as RewardStatus)}>
               {REWARD_OPTIONS.map((s) => (
                 <option key={s} value={s}>
