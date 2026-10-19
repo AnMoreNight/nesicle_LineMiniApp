@@ -45,7 +45,8 @@ function PayoutSection({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const eligible = rewards.payoutEligibleTotal;
+  // Vercel(フロント)と Render(API)は同時にはデプロイされないため、古いAPIはこの項目を返さないことがある。
+  const eligible = rewards.payoutEligibleTotal ?? 0;
 
   async function handleRequest() {
     setSubmitting(true);
