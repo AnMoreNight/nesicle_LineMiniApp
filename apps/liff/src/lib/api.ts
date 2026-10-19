@@ -27,9 +27,23 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const body = isJson ? await res.json().catch(() => null) : null;
 
   if (!res.ok) {
-    throw new ApiError(res.status, (body && body.error) || `リクエストに失敗しました (${res.status})`);
+    // Fastify's own error bodies ({ statusCode, error: "Not Found", ... }) carry English HTTP
+    // status text, not a message meant for users; only our routes' { error } is user-facing.
+    const message =
+      body && typeof body.statusCode === "number"
+        ? describeServerError(res.status, body.message)
+        : (body && body.error) || `リクエストに失敗しました (${res.status})`;
+    throw new ApiError(res.status, message);
   }
   return body as T;
+}
+
+function describeServerError(status: number, detail?: string): string {
+  if (status === 404 && detail?.startsWith("Route ")) {
+    return "現在この機能はご利用いただけません。しばらくしてから再度お試しください。";
+  }
+  if (status >= 500) return "サーバーでエラーが発生しました。時間をおいて再度お試しください。";
+  return `リクエストに失敗しました (${status})`;
 }
 
 export const api = {

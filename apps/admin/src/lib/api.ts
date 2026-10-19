@@ -9,6 +9,14 @@ export class ApiError extends Error {
   }
 }
 
+function describeServerError(status: number, detail?: string): string {
+  if (status === 404 && detail?.startsWith("Route ")) {
+    return "この機能はAPIサーバーにまだ反映されていません。APIサーバー(Render)を最新のコードで再デプロイしてください。";
+  }
+  if (status >= 500) return "サーバーでエラーが発生しました。時間をおいて再度お試しください。";
+  return `リクエストに失敗しました (${status})`;
+}
+
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method,
@@ -20,8 +28,14 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   if (!res.ok) {
     let message = `リクエストに失敗しました (${res.status})`;
     try {
-      const data = (await res.json()) as { error?: string };
-      if (data?.error) message = data.error;
+      const data = (await res.json()) as { error?: string; message?: string; statusCode?: number };
+      // Fastify's own error bodies ({ statusCode, error: "Not Found", ... }) carry English HTTP
+      // status text, not a message meant for display; only our routes' { error } is user-facing.
+      if (typeof data?.statusCode === "number") {
+        message = describeServerError(res.status, data.message);
+      } else if (data?.error) {
+        message = data.error;
+      }
     } catch {
       // response had no JSON body; keep the default message
     }

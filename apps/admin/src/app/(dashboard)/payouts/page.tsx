@@ -43,7 +43,9 @@ export default function PayoutsPage() {
 
       {error ? <ErrorState message={error} /> : null}
       {!error && !requests ? <LoadingState /> : null}
-      {requests && requests.length === 0 ? <EmptyState message="振込申請はまだありません。" /> : null}
+      {requests && requests.length === 0 ? (
+        <EmptyState message="振込申請はまだありません。紹介者が「完了報告」を行い、運営が報酬を確定した申込について振込申請すると、ここに表示されます。" />
+      ) : null}
 
       {requests && requests.length > 0 ? (
         <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-card">
