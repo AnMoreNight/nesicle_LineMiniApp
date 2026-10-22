@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   PROGRESS_STATUS_LABEL_JA,
   REWARD_STATUS_LABEL_JA,
+  formatInquiryNumber,
   type ProgressStatus,
   type RewardStatus,
 } from "@nesicle/shared";
@@ -123,7 +124,7 @@ export default function ApplicationsPage() {
           <option value="no">完了報告なし</option>
         </Select>
         <Input
-          placeholder="申込者名で検索"
+          placeholder="申込者名・お問い合わせ番号で検索"
           value={qInput}
           onChange={(e) => setQInput(e.target.value)}
           className="w-52"
@@ -139,6 +140,7 @@ export default function ApplicationsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-surface-muted text-left text-ink-muted">
+                <th className="px-4 py-3 font-medium">お問い合わせ番号</th>
                 <th className="px-4 py-3 font-medium">申込者</th>
                 <th className="px-4 py-3 font-medium">案件</th>
                 <th className="px-4 py-3 font-medium">紹介者</th>
@@ -155,6 +157,9 @@ export default function ApplicationsPage() {
                   onClick={() => setSelected(a)}
                   className="cursor-pointer border-b border-border last:border-0 hover:bg-surface-muted"
                 >
+                  <td className="whitespace-nowrap px-4 py-3 tabular-nums text-ink-muted">
+                    {formatInquiryNumber(a.applicant.inquiryNumber)}
+                  </td>
                   <td className="px-4 py-3 font-medium text-ink">
                     {a.applicant.fullName}
                     {a.referrerReportedAt ? (

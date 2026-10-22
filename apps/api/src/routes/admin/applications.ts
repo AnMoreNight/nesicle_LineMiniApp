@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { Prisma, prisma } from "@nesicle/db";
+import { formatInquiryNumber, parseInquiryNumber } from "@nesicle/shared";
 import { requireAdmin } from "../../lib/auth.js";
 import { toCsv } from "../../lib/csv.js";
 import { notifyReferrer } from "../../lib/lineNotify.js";
@@ -17,13 +18,20 @@ const querySchema = z.object({
   createdAfter: z.string().datetime().optional(),
 });
 
+// 検索欄は申込者名に加え、申込者から問い合わせがあった際のお問い合わせ番号(OP-000123)でも引ける。
+function applicantSearch(q: string): Prisma.ApplicantWhereInput {
+  const byName: Prisma.ApplicantWhereInput = { fullName: { contains: q, mode: "insensitive" } };
+  const inquiryNumber = parseInquiryNumber(q);
+  return inquiryNumber === null ? byName : { OR: [byName, { inquiryNumber }] };
+}
+
 function buildWhere(query: z.infer<typeof querySchema>): Prisma.ApplicationWhereInput {
   return {
     progressStatus: query.progressStatus,
     rewardStatus: query.rewardStatus,
     caseId: query.caseId,
     referralLink: query.referrerId ? { referrerId: query.referrerId } : undefined,
-    applicant: query.q ? { fullName: { contains: query.q, mode: "insensitive" } } : undefined,
+    applicant: query.q ? applicantSearch(query.q) : undefined,
     referrerReportedAt: query.reported === "yes" ? { not: null } : query.reported === "no" ? null : undefined,
     createdAt: query.createdAfter ? { gt: new Date(query.createdAfter) } : undefined,
   };
@@ -63,8 +71,9 @@ export default async function adminApplicationsRoutes(app: FastifyInstance) {
       orderBy: { createdAt: "desc" },
     });
     const csv = toCsv(
-      ["申込ID", "申込者", "案件", "掲載企業", "紹介者", "進捗状況", "成果/報酬状況", "報酬額", "対象外理由", "完了報告日時", "申込日", "更新日"],
+      ["お問い合わせ番号", "申込ID", "申込者", "案件", "掲載企業", "紹介者", "進捗状況", "成果/報酬状況", "報酬額", "対象外理由", "完了報告日時", "申込日", "更新日"],
       applications.map((a) => [
+        formatInquiryNumber(a.applicant.inquiryNumber),
         a.id,
         a.applicant.fullName,
         a.case.title,

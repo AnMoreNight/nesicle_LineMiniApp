@@ -7,7 +7,8 @@ import { IconCheckCircle } from "@/components/icons";
 function CompleteContent() {
   const searchParams = useSearchParams();
   const count = searchParams.get("count");
-  const id = searchParams.get("id");
+  const inquiryNumber = searchParams.get("no");
+  const emailSent = searchParams.get("mail") === "1";
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center px-6 text-center">
@@ -20,7 +21,16 @@ function CompleteContent() {
         <br />
         担当企業より、順次ご連絡いたします。
       </p>
-      {id && <p className="mt-4 rounded-md bg-surface-muted px-3 py-2 text-sm text-ink-muted">お問い合わせ番号: {id}</p>}
+      {inquiryNumber && (
+        <div className="mt-5 w-full rounded-lg border border-border bg-surface px-4 py-3">
+          <p className="text-xs text-ink-muted">お問い合わせ番号</p>
+          <p className="mt-0.5 text-2xl font-bold tracking-wider tabular-nums">{inquiryNumber}</p>
+          <p className="mt-1.5 text-xs leading-relaxed text-ink-muted">
+            {emailSent && "ご入力のメールアドレスに受付完了メールをお送りしました。"}
+            お問い合わせの際に必要となりますので、お控えください。
+          </p>
+        </div>
+      )}
     </div>
   );
 }

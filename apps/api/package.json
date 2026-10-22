@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@aws-sdk/client-sesv2": "^3.1155.0",
     "@fastify/cookie": "^9.4.0",
     "@fastify/cors": "^9.0.1",
     "@nesicle/db": "0.1.0",

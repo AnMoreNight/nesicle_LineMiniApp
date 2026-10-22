@@ -189,9 +189,11 @@ model ReferralLinkCase {
   @@map("referral_link_cases")
 }
 
-/// 紹介された申込者
+/// 紹介された申込者 (1回の申込フォーム送信 = 1レコード。複数案件に同時申込しても1件)
 model Applicant {
   id         String   @id @default(cuid())
+  // 申込者に案内するお問い合わせ番号の連番 (表示は formatInquiryNumber で "OP-000123" 形式)
+  inquiryNumber Int   @unique @default(autoincrement())
   fullName   String
   birthDate  DateTime
   postalCode String   @default("")

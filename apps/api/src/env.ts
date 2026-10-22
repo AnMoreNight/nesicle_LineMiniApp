@@ -19,6 +19,10 @@ export const env = {
   // 未設定の間は notifyReferrer が黙ってno-opする — クライアントがチャネルを用意し次第、
   // 環境変数を設定するだけで動き出す。
   lineMessagingChannelAccessToken: process.env.LINE_MESSAGING_CHANNEL_ACCESS_TOKEN ?? "",
+  // Amazon SES による申込者向けメール。MAIL_FROM が未設定の間は送信せずログ出力のみ。
+  // 認証情報は AWS SDK の標準どおり AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY から読む。
+  mailFrom: process.env.MAIL_FROM ?? "",
+  awsRegion: process.env.AWS_REGION ?? "ap-northeast-1",
   publicLiffAppUrl: process.env.PUBLIC_LIFF_APP_URL ?? "http://localhost:3000",
   corsOrigins: (process.env.CORS_ORIGINS ?? "http://localhost:3000")
     .split(",")

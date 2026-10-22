@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   PROGRESS_STATUS_LABEL_JA,
   REWARD_STATUS_LABEL_JA,
+  formatInquiryNumber,
   type ProgressStatus,
   type RewardStatus,
 } from "@nesicle/shared";
@@ -88,6 +89,7 @@ export function ApplicationDrawer({ application, onClose, onUpdated }: Applicati
         </div>
 
         <dl className="mb-6 space-y-2 text-sm">
+          <Row label="お問い合わせ番号" value={formatInquiryNumber(application.applicant.inquiryNumber)} />
           <Row label="掲載企業" value={application.case.company.name} />
           <Row
             label="紹介者"

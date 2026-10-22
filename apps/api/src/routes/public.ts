@@ -1,9 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "@nesicle/db";
-import type { ReferralLandingDto } from "@nesicle/shared";
-import { serializeCaseSummary } from "../lib/serialize.js";
+import { formatInquiryNumber, type ApplyResultDto, type ReferralLandingDto } from "@nesicle/shared";
+import { serializeLandingCase } from "../lib/serialize.js";
 import { notifyReferrer } from "../lib/lineNotify.js";
+import { sendEmail } from "../lib/mailer.js";
+import { buildApplicationReceivedEmail } from "../lib/applicationEmail.js";
 
 const applySchema = z.object({
   fullName: z.string().min(1).max(60),
@@ -36,7 +38,7 @@ export default async function publicRoutes(app: FastifyInstance) {
     }
     const dto: ReferralLandingDto = {
       referrerDisplayName: link.referrer.displayName,
-      cases: publishedCases.map(serializeCaseSummary),
+      cases: publishedCases.map(serializeLandingCase),
     };
     return dto;
   });
@@ -50,7 +52,7 @@ export default async function publicRoutes(app: FastifyInstance) {
 
     const link = await prisma.referralLink.findUnique({
       where: { code },
-      include: { cases: { include: { case: true } } },
+      include: { cases: { include: { case: { include: { company: true } } } } },
     });
     if (!link) {
       return reply.code(404).send({ error: "紹介URLが見つかりません。" });
@@ -95,9 +97,28 @@ export default async function publicRoutes(app: FastifyInstance) {
       })),
     });
 
-    // OPTASは毎日開くタイプのサービスではないため、申込発生はLINEでも通知する。
-    await notifyReferrer(link.referrerId, `紹介した方からお申し込みがありました(${selectedCaseIds.length}件)。`);
+    const inquiryNumber = formatInquiryNumber(applicant.inquiryNumber);
+    const email = buildApplicationReceivedEmail({
+      fullName: applicant.fullName,
+      inquiryNumber,
+      cases: link.cases
+        .filter((rc) => selectedCaseIds.includes(rc.caseId))
+        .map((rc) => ({ title: rc.case.title, companyName: rc.case.company.name })),
+      receivedAt: applicant.createdAt,
+    });
 
-    return { trackingId: applicant.id, applicationCount: selectedCaseIds.length };
+    // 申込者には受付完了メール、紹介者には(毎日開くサービスではないため)LINEで申込発生を知らせる。
+    // どちらも失敗しても申込自体は保存済みなので、例外は投げずに結果だけ受け取る。
+    const [confirmationEmailSent] = await Promise.all([
+      sendEmail(applicant.email, email.subject, email.text),
+      notifyReferrer(link.referrerId, `紹介した方からお申し込みがありました(${selectedCaseIds.length}件)。`),
+    ]);
+
+    const result: ApplyResultDto = {
+      inquiryNumber,
+      applicationCount: selectedCaseIds.length,
+      confirmationEmailSent,
+    };
+    return result;
   });
 }

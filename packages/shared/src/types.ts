@@ -83,9 +83,27 @@ export interface BankAccountDto {
   accountHolder: string;
 }
 
+// 紹介された方(申込者)向けの案件情報。紹介者向けに書かれた「概要」と紹介者の報酬額は含めない。
+export interface ReferralLandingCaseDto {
+  id: string;
+  title: string;
+  category: string;
+  area: string;
+  companyName: string;
+  description: string;
+  eligibilityNotes: string;
+  ineligibleNotes: string;
+}
+
 export interface ReferralLandingDto {
   referrerDisplayName: string;
-  cases: CaseSummaryDto[];
+  cases: ReferralLandingCaseDto[];
+}
+
+export interface ApplyResultDto {
+  inquiryNumber: string;
+  applicationCount: number;
+  confirmationEmailSent: boolean;
 }
 
 export interface ApplyPayload {

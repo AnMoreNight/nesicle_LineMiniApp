@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import type { ApplyPayload, ReferralLandingDto } from "@nesicle/shared";
+import type { ApplyPayload, ApplyResultDto, ReferralLandingDto } from "@nesicle/shared";
 import { PageHeader } from "@/components/PageHeader";
 import { PageSpinner } from "@/components/Spinner";
 import { useApiGet } from "@/lib/useApiGet";
@@ -53,8 +53,12 @@ export default function ApplyPage() {
     setSubmitting(true);
     setError(null);
     try {
-      const result = await api.post<{ trackingId: string; applicationCount: number }>(`/api/r/${code}/apply`, form);
-      router.push(`/r/${code}/complete?count=${result.applicationCount}&id=${result.trackingId}`);
+      const result = await api.post<ApplyResultDto>(`/api/r/${code}/apply`, form);
+      const params = new URLSearchParams({ count: String(result.applicationCount) });
+      // デプロイの切り替わり中は古いAPIがお問い合わせ番号を返さないことがあるため、ある場合だけ渡す。
+      if (result.inquiryNumber) params.set("no", result.inquiryNumber);
+      if (result.confirmationEmailSent) params.set("mail", "1");
+      router.push(`/r/${code}/complete?${params.toString()}`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "送信に失敗しました。");
     } finally {
@@ -154,7 +158,7 @@ export default function ApplyPage() {
                 />
                 <span>
                   <span className="block text-base font-bold">{c.title}</span>
-                  <span className="block text-sm text-ink-muted">{c.summary}</span>
+                  <span className="block text-sm text-ink-muted">提供: {c.companyName}</span>
                 </span>
               </label>
             ))}

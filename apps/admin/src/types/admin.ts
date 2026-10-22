@@ -118,6 +118,7 @@ export interface ReferralLinkBase {
 
 export interface ApplicantBase {
   id: string;
+  inquiryNumber: number;
   fullName: string;
   birthDate: string;
   postalCode: string;
