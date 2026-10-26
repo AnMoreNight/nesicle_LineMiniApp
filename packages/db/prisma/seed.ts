@@ -271,6 +271,7 @@ async function main() {
       applicantId: sato.id,
       caseId: caseInsurance.id,
       referralLinkId: link2.id,
+      inquirySeq: 2,
       progressStatus: "APPLIED",
       rewardStatus: "UNCONFIRMED",
     },

@@ -139,6 +139,7 @@ export interface ApplicationBase {
   rewardAmount: number | null;
   ineligibleReason: string | null;
   internalNotes: string;
+  inquirySeq: number;
   // パートナー(紹介者)によるワンタッチ「完了報告」の日時。null なら未報告。
   referrerReportedAt: string | null;
   payoutRequestId: string | null;

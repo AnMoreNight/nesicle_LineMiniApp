@@ -55,8 +55,12 @@ export default function ApplyPage() {
     try {
       const result = await api.post<ApplyResultDto>(`/api/r/${code}/apply`, form);
       const params = new URLSearchParams({ count: String(result.applicationCount) });
-      // デプロイの切り替わり中は古いAPIがお問い合わせ番号を返さないことがあるため、ある場合だけ渡す。
-      if (result.inquiryNumber) params.set("no", result.inquiryNumber);
+      // 案件ごとのお問い合わせ番号と案件名を対で渡す。デプロイの切り替わり中は古いAPIが
+      // 返さないことがあるため、無ければ番号なしの完了画面になる。
+      for (const a of result.applications ?? []) {
+        params.append("no", a.inquiryNumber);
+        params.append("t", a.caseTitle);
+      }
       if (result.confirmationEmailSent) params.set("mail", "1");
       router.push(`/r/${code}/complete?${params.toString()}`);
     } catch (err) {

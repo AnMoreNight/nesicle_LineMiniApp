@@ -158,7 +158,7 @@ export default function ApplicationsPage() {
                   className="cursor-pointer border-b border-border last:border-0 hover:bg-surface-muted"
                 >
                   <td className="whitespace-nowrap px-4 py-3 tabular-nums text-ink-muted">
-                    {formatInquiryNumber(a.applicant.inquiryNumber)}
+                    {formatInquiryNumber(a.applicant.inquiryNumber, a.inquirySeq)}
                   </td>
                   <td className="px-4 py-3 font-medium text-ink">
                     {a.applicant.fullName}

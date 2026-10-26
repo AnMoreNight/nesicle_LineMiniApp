@@ -57,9 +57,12 @@ export default async function publicRoutes(app: FastifyInstance) {
     if (!link) {
       return reply.code(404).send({ error: "紹介URLが見つかりません。" });
     }
-    const bundledCaseIds = new Set(link.cases.map((rc) => rc.caseId));
-    const selectedCaseIds = parsed.data.caseIds.filter((id) => bundledCaseIds.has(id));
-    if (selectedCaseIds.length === 0) {
+    const bundledCases = new Map(link.cases.map((rc) => [rc.caseId, rc.case]));
+    // 選択順に連番(inquirySeq)を振る。この並びをDB登録・メール・レスポンスで共通に使う。
+    const selected = [...new Set(parsed.data.caseIds)]
+      .filter((id) => bundledCases.has(id))
+      .map((id, i) => ({ seq: i + 1, case: bundledCases.get(id)! }));
+    if (selected.length === 0) {
       return reply.code(400).send({ error: "この紹介URLに含まれる案件を選択してください。" });
     }
 
@@ -90,20 +93,22 @@ export default async function publicRoutes(app: FastifyInstance) {
     });
 
     await prisma.application.createMany({
-      data: selectedCaseIds.map((caseId) => ({
+      data: selected.map((s) => ({
         applicantId: applicant.id,
-        caseId,
+        caseId: s.case.id,
         referralLinkId: link.id,
+        inquirySeq: s.seq,
       })),
     });
 
-    const inquiryNumber = formatInquiryNumber(applicant.inquiryNumber);
+    const items = selected.map((s) => ({
+      inquiryNumber: formatInquiryNumber(applicant.inquiryNumber, s.seq),
+      title: s.case.title,
+      companyName: s.case.company.name,
+    }));
     const email = buildApplicationReceivedEmail({
       fullName: applicant.fullName,
-      inquiryNumber,
-      cases: link.cases
-        .filter((rc) => selectedCaseIds.includes(rc.caseId))
-        .map((rc) => ({ title: rc.case.title, companyName: rc.case.company.name })),
+      items,
       receivedAt: applicant.createdAt,
     });
 
@@ -111,13 +116,13 @@ export default async function publicRoutes(app: FastifyInstance) {
     // どちらも失敗しても申込自体は保存済みなので、例外は投げずに結果だけ受け取る。
     const [confirmationEmailSent] = await Promise.all([
       sendEmail(applicant.email, email.subject, email.text),
-      notifyReferrer(link.referrerId, `紹介した方からお申し込みがありました(${selectedCaseIds.length}件)。`),
+      notifyReferrer(link.referrerId, `紹介した方からお申し込みがありました(${selected.length}件)。`),
     ]);
 
     const result: ApplyResultDto = {
-      inquiryNumber,
-      applicationCount: selectedCaseIds.length,
+      applicationCount: selected.length,
       confirmationEmailSent,
+      applications: items.map((it) => ({ inquiryNumber: it.inquiryNumber, caseTitle: it.title })),
     };
     return result;
   });

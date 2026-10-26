@@ -219,6 +219,9 @@ model Application {
   rewardAmount     Int?
   ineligibleReason String?
   internalNotes    String         @default("")
+  // 同じ申込(Applicant)内での連番。お問い合わせ番号は申込ごとの番号 + この連番 ("OP-000123-2")
+  // で、案件ごとに企業・進捗が別になるため1件ずつ固有の番号にする。
+  inquirySeq       Int            @default(1)
   // 紹介者(パートナー)がワンタッチで行う「完了報告」の日時。これ自体は報酬確定を意味せず、
   // 運営が掲載企業へ成果確認を行うきっかけとなるシグナル。null なら未報告。
   referrerReportedAt DateTime?
@@ -232,6 +235,7 @@ model Application {
   referralLink  ReferralLink   @relation(fields: [referralLinkId], references: [id])
   payoutRequest PayoutRequest? @relation(fields: [payoutRequestId], references: [id])
 
+  @@unique([applicantId, inquirySeq])
   @@map("applications")
 }
 

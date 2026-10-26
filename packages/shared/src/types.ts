@@ -101,9 +101,10 @@ export interface ReferralLandingDto {
 }
 
 export interface ApplyResultDto {
-  inquiryNumber: string;
   applicationCount: number;
   confirmationEmailSent: boolean;
+  // 案件ごとに固有のお問い合わせ番号 (例: "OP-000123-1", "OP-000123-2")
+  applications: Array<{ inquiryNumber: string; caseTitle: string }>;
 }
 
 export interface ApplyPayload {

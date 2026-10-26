@@ -18,11 +18,17 @@ const querySchema = z.object({
   createdAfter: z.string().datetime().optional(),
 });
 
-// 検索欄は申込者名に加え、申込者から問い合わせがあった際のお問い合わせ番号(OP-000123)でも引ける。
-function applicantSearch(q: string): Prisma.ApplicantWhereInput {
-  const byName: Prisma.ApplicantWhereInput = { fullName: { contains: q, mode: "insensitive" } };
-  const inquiryNumber = parseInquiryNumber(q);
-  return inquiryNumber === null ? byName : { OR: [byName, { inquiryNumber }] };
+// 検索欄は申込者名に加え、お問い合わせ番号でも引ける。"OP-000123-2" はその1件、
+// "OP-000123" は同じ申込(まとめて申し込んだ全案件)を返す。
+function searchWhere(q: string): Prisma.ApplicationWhereInput {
+  const byName: Prisma.ApplicationWhereInput = { applicant: { fullName: { contains: q, mode: "insensitive" } } };
+  const n = parseInquiryNumber(q);
+  if (!n) return byName;
+  const byNumber: Prisma.ApplicationWhereInput = {
+    applicant: { inquiryNumber: n.base },
+    ...(n.seq !== null ? { inquirySeq: n.seq } : {}),
+  };
+  return { OR: [byName, byNumber] };
 }
 
 function buildWhere(query: z.infer<typeof querySchema>): Prisma.ApplicationWhereInput {
@@ -31,7 +37,7 @@ function buildWhere(query: z.infer<typeof querySchema>): Prisma.ApplicationWhere
     rewardStatus: query.rewardStatus,
     caseId: query.caseId,
     referralLink: query.referrerId ? { referrerId: query.referrerId } : undefined,
-    applicant: query.q ? applicantSearch(query.q) : undefined,
+    ...(query.q ? searchWhere(query.q) : {}),
     referrerReportedAt: query.reported === "yes" ? { not: null } : query.reported === "no" ? null : undefined,
     createdAt: query.createdAfter ? { gt: new Date(query.createdAfter) } : undefined,
   };
@@ -73,7 +79,7 @@ export default async function adminApplicationsRoutes(app: FastifyInstance) {
     const csv = toCsv(
       ["お問い合わせ番号", "申込ID", "申込者", "案件", "掲載企業", "紹介者", "進捗状況", "成果/報酬状況", "報酬額", "対象外理由", "完了報告日時", "申込日", "更新日"],
       applications.map((a) => [
-        formatInquiryNumber(a.applicant.inquiryNumber),
+        formatInquiryNumber(a.applicant.inquiryNumber, a.inquirySeq),
         a.id,
         a.applicant.fullName,
         a.case.title,

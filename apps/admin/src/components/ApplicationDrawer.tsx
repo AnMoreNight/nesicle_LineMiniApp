@@ -89,7 +89,10 @@ export function ApplicationDrawer({ application, onClose, onUpdated }: Applicati
         </div>
 
         <dl className="mb-6 space-y-2 text-sm">
-          <Row label="お問い合わせ番号" value={formatInquiryNumber(application.applicant.inquiryNumber)} />
+          <Row
+            label="お問い合わせ番号"
+            value={formatInquiryNumber(application.applicant.inquiryNumber, application.inquirySeq)}
+          />
           <Row label="掲載企業" value={application.case.company.name} />
           <Row
             label="紹介者"
