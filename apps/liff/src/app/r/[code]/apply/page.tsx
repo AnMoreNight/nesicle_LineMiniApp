@@ -5,8 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import type { ApplyPayload, ApplyResultDto, ReferralLandingDto, ReturningApplicantDto } from "@nesicle/shared";
 import { PageHeader } from "@/components/PageHeader";
 import { PageSpinner } from "@/components/Spinner";
-import { TermsBody } from "@/components/legal/TermsBody";
-import { PrivacyBody } from "@/components/legal/PrivacyBody";
 import { useApiGet } from "@/lib/useApiGet";
 import { api, ApiError } from "@/lib/api";
 import { btnPrimary, inputBase, label as labelClass } from "@/lib/ui";
@@ -23,9 +21,9 @@ const EMPTY: ApplyPayload = {
   agreedTerms: false,
 };
 
-// 紹介ページへ戻ったときや再読み込みで入力が消えないよう、入力途中の内容をタブ単位
-// (sessionStorage)で保存し、戻ったときに復元する。送信が完了したら消す。
-// (利用規約・プライバシーポリシーはページ移動せずにこの画面内で開く)
+// 入力途中の内容をタブ単位(sessionStorage)で保存し、このページに戻ったときに復元する。送信が完了したら消す。
+// 利用規約・プライバシーポリシーは新しいタブで開くが、同じ画面で開くアプリ内ブラウザ(LINE等)や、
+// 紹介ページへ戻った場合・再読み込みでも入力が消えないようにするため。
 const draftKey = (code: string) => `apply-draft:${code}`;
 
 const CONTACT_FIELDS = ["fullName", "postalCode", "address", "phone", "email"] as const;
@@ -48,7 +46,6 @@ export default function ApplyPage() {
   const [form, setForm] = useState<ApplyPayload>(initialDraft ?? EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [openDoc, setOpenDoc] = useState<"terms" | "privacy" | null>(null);
   // この端末で以前に申し込んだ方の連絡先(APIが端末の目印Cookieから返す)。初回の方は null。
   const me = useApiGet<{ applicant: ReturningApplicantDto | null }>("/api/applicant/me");
   const [saved, setSaved] = useState<ReturningApplicantDto | null>(null);
@@ -249,47 +246,25 @@ export default function ApplyPage() {
           </div>
         </div>
 
-        <div>
-          <label className="flex items-start gap-2 text-sm text-ink-muted">
-            <input
-              type="checkbox"
-              className="mt-0.5"
-              checked={form.agreedTerms}
-              onChange={(e) => setForm({ ...form, agreedTerms: e.target.checked })}
-            />
-            <span>
-              <button
-                type="button"
-                onClick={() => setOpenDoc((d) => (d === "terms" ? null : "terms"))}
-                className="font-bold text-primary underline"
-              >
-                利用規約
-              </button>
-              および
-              <button
-                type="button"
-                onClick={() => setOpenDoc((d) => (d === "privacy" ? null : "privacy"))}
-                className="font-bold text-primary underline"
-              >
-                プライバシーポリシー
-              </button>
-              に同意します
-            </span>
-          </label>
-          {openDoc && (
-            <div className="mt-2 rounded-md border border-border bg-surface">
-              <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-                <p className="text-sm font-bold">{openDoc === "terms" ? "利用規約" : "プライバシーポリシー"}</p>
-                <button type="button" onClick={() => setOpenDoc(null)} className="text-sm font-bold text-primary">
-                  閉じる
-                </button>
-              </div>
-              <div className="max-h-80 space-y-5 overflow-y-auto overscroll-contain px-4 py-4 text-sm leading-relaxed text-ink">
-                {openDoc === "terms" ? <TermsBody /> : <PrivacyBody />}
-              </div>
-            </div>
-          )}
-        </div>
+        <label className="flex items-start gap-2 text-sm text-ink-muted">
+          <input
+            type="checkbox"
+            className="mt-0.5"
+            checked={form.agreedTerms}
+            onChange={(e) => setForm({ ...form, agreedTerms: e.target.checked })}
+          />
+          <span>
+            {/* 新しいタブで開く。このタブ(入力中のフォーム)はそのまま残り、履歴も増えないため完了画面の×で閉じられる。 */}
+            <a href="/terms" target="_blank" rel="noopener" className="font-bold text-primary underline">
+              利用規約
+            </a>
+            および
+            <a href="/privacy" target="_blank" rel="noopener" className="font-bold text-primary underline">
+              プライバシーポリシー
+            </a>
+            に同意します
+          </span>
+        </label>
 
         {error && <p className="text-sm font-bold text-danger">{error}</p>}
 
