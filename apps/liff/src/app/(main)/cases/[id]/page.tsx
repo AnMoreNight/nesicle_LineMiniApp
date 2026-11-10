@@ -29,7 +29,7 @@ export default function CaseDetailPage() {
       <PageHeader title="案件詳細" />
       <main className="space-y-4 px-5 py-5">
         <div className="flex flex-wrap gap-1.5">
-          <span className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary">{c.category}</span>
+          <span className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary-ink">{c.category}</span>
           <span className="rounded-md bg-surface-muted px-2 py-0.5 text-sm font-bold text-ink-muted">{c.area}</span>
         </div>
         <h1 className="text-2xl font-extrabold leading-snug">{c.title}</h1>

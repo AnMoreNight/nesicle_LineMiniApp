@@ -28,7 +28,7 @@ export function ShareLinkCard({
     <div className={clsx(card, highlight && "border-primary/40 ring-2 ring-primary/15")}>
       <div className="flex flex-wrap gap-1.5">
         {link.cases.map((c) => (
-          <span key={c.id} className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary">
+          <span key={c.id} className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary-ink">
             {c.title}
           </span>
         ))}

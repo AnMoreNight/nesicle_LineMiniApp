@@ -44,6 +44,8 @@ const config: Config = {
           DEFAULT: "var(--color-primary)",
           hover: "var(--color-primary-hover)",
           soft: "var(--color-primary-soft)",
+          // 薄い緑の背景(soft)の上に置く緑の文字。primary のままだと背景に溶けて読みにくいため少し濃くする。
+          ink: "var(--color-primary-ink)",
         },
         money: { DEFAULT: "var(--color-money)", soft: "var(--color-money-soft)" },
         line: { DEFAULT: "var(--color-line-brand)" },

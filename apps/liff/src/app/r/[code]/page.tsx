@@ -13,6 +13,12 @@ import clsx from "clsx";
 const COLLAPSE_CHARS = 140;
 const COLLAPSE_LINES = 4;
 
+const STEPS = [
+  "下のボタンから、お名前とご連絡先を入力",
+  "担当企業から、ご登録の連絡先へご連絡",
+  "内容にご納得いただけたら、サービスをご利用",
+];
+
 function LandingCase({ c }: { c: ReferralLandingCaseDto }) {
   const [expanded, setExpanded] = useState(false);
   // Vercel(フロント)と Render(API)は同時にはデプロイされないため、古いAPIはこの項目を返さないことがある。
@@ -22,7 +28,7 @@ function LandingCase({ c }: { c: ReferralLandingCaseDto }) {
   return (
     <div className={card}>
       <div className="flex flex-wrap gap-1.5">
-        <span className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary">{c.category}</span>
+        <span className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary-ink">{c.category}</span>
         <span className="rounded-md bg-surface-muted px-2 py-0.5 text-sm font-bold text-ink-muted">{c.area}</span>
       </div>
       <p className="mt-2 text-lg font-bold leading-snug">{c.title}</p>
@@ -39,23 +45,6 @@ function LandingCase({ c }: { c: ReferralLandingCaseDto }) {
             </button>
           )}
         </div>
-      )}
-
-      {(c.eligibilityNotes || c.ineligibleNotes) && (
-        <dl className="mt-3 space-y-2 rounded-md bg-surface-muted px-3 py-2.5 text-sm">
-          {c.eligibilityNotes && (
-            <div>
-              <dt className="font-bold text-ink">対象となる方</dt>
-              <dd className="mt-0.5 whitespace-pre-line leading-relaxed text-ink-muted">{c.eligibilityNotes}</dd>
-            </div>
-          )}
-          {c.ineligibleNotes && (
-            <div>
-              <dt className="font-bold text-ink">対象外となる場合</dt>
-              <dd className="mt-0.5 whitespace-pre-line leading-relaxed text-ink-muted">{c.ineligibleNotes}</dd>
-            </div>
-          )}
-        </dl>
       )}
     </div>
   );
@@ -76,30 +65,53 @@ export default function ReferralLandingPage() {
     );
   }
 
+  const count = data.cases.length;
+
   return (
-    <div className="min-h-dvh px-6 py-10">
-      <div className="mb-6 text-center">
-        <p className="text-xl font-extrabold">OPTAS</p>
-      </div>
+    <div className="min-h-dvh px-5 pb-28 pt-8">
+      <p className="text-center text-xl font-extrabold">OPTAS</p>
 
-      <div className="rounded-lg bg-primary-soft px-4 py-3 text-base font-bold text-primary">
-        {data.referrerDisplayName} さんから紹介が届いています
-      </div>
+      <section className="mt-5 rounded-lg bg-primary-soft px-4 py-5 text-center">
+        <p className="text-sm font-bold text-primary-ink">{data.referrerDisplayName} さんからのご紹介</p>
+        <p className="mt-1.5 text-xl font-bold leading-snug text-ink">
+          {count > 1 ? `おすすめのサービスが${count}件届いています` : "おすすめのサービスが届いています"}
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+          内容をご確認のうえ、気になるサービスにお申し込みください。
+        </p>
+      </section>
 
-      <p className="mb-3 mt-6 text-base font-extrabold text-ink-muted">紹介されたサービス</p>
+      <p className="mb-3 mt-6 text-base font-extrabold text-ink-muted">サービスの内容</p>
       <div className="space-y-3">
         {data.cases.map((c) => (
           <LandingCase key={c.id} c={c} />
         ))}
       </div>
 
+      <section className="mt-6">
+        <p className="mb-3 text-base font-extrabold text-ink-muted">お申し込みの流れ</p>
+        <ol className="space-y-2.5">
+          {STEPS.map((step, i) => (
+            <li key={step} className="flex items-start gap-3 text-sm leading-relaxed text-ink">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                {i + 1}
+              </span>
+              {step}
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <p className="mt-6 rounded-md bg-surface-muted px-3 py-2.5 text-sm leading-relaxed text-ink-muted">
         ご入力いただく個人情報は、紹介者(OPTAS パートナー)には共有されません。内容をご確認のうえ、ご自身でお申し込みください。
       </p>
 
-      <button type="button" onClick={() => router.push(`/r/${code}/apply`)} className={clsx(btnPrimary, "mt-6 w-full")}>
-        内容を確認して申し込む
-      </button>
+      {/* 申込ボタンは常に画面下に表示し、長い説明を最後までスクロールしなくても申し込めるようにする。 */}
+      <div className="safe-bottom fixed bottom-0 left-1/2 z-20 w-full max-w-[480px] -translate-x-1/2 border-t border-border bg-surface px-5 pt-3">
+        <button type="button" onClick={() => router.push(`/r/${code}/apply`)} className={clsx(btnPrimary, "mb-3 w-full")}>
+          {count > 1 ? "サービスを選んで申し込む" : "このサービスに申し込む"}
+        </button>
+      </div>
     </div>
   );
 }

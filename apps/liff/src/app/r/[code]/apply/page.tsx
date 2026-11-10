@@ -13,7 +13,6 @@ import clsx from "clsx";
 
 const EMPTY: ApplyPayload = {
   fullName: "",
-  birthDate: "",
   postalCode: "",
   address: "",
   phone: "",
@@ -23,19 +22,49 @@ const EMPTY: ApplyPayload = {
   agreedTerms: false,
 };
 
+// 利用規約・プライバシーポリシーを開くとこのページを離れるため、入力途中の内容をタブ単位
+// (sessionStorage)で保存し、戻ったときに復元する。送信が完了したら消す。
+const draftKey = (code: string) => `apply-draft:${code}`;
+
+function readDraft(code: string): ApplyPayload | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const saved = sessionStorage.getItem(draftKey(code));
+    return saved ? { ...EMPTY, ...JSON.parse(saved) } : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function ApplyPage() {
   const { code } = useParams<{ code: string }>();
   const router = useRouter();
   const { data, loading } = useApiGet<ReferralLandingDto>(`/api/r/${code}`);
-  const [form, setForm] = useState<ApplyPayload>(EMPTY);
+  const [initialDraft] = useState(() => readDraft(code));
+  const [form, setForm] = useState<ApplyPayload>(initialDraft ?? EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (data) {
-      setForm((prev) => ({ ...prev, caseIds: data.cases.map((c) => c.id) }));
+    if (!data) return;
+    const available = data.cases.map((c) => c.id);
+    // 初回は全件選択済み。戻ってきた場合は選び直した内容を残す。
+    setForm((prev) => ({
+      ...prev,
+      caseIds: initialDraft ? prev.caseIds.filter((id) => available.includes(id)) : available,
+    }));
+  }, [data, initialDraft]);
+
+  useEffect(() => {
+    // 申込先の読み込み前(スピナー表示中)は保存しない。この時点の「未選択」を下書きに残すと、
+    // すぐ戻ってきたときに申込先が1件も選ばれていない状態で復元されてしまうため。
+    if (!data) return;
+    try {
+      sessionStorage.setItem(draftKey(code), JSON.stringify(form));
+    } catch {
+      // storage unavailable (e.g. blocked): the form still works, it just won't survive leaving the page
     }
-  }, [data]);
+  }, [code, data, form]);
 
   function toggleCase(id: string) {
     setForm((prev) => ({
@@ -60,8 +89,14 @@ export default function ApplyPage() {
       for (const a of result.applications ?? []) {
         params.append("no", a.inquiryNumber);
         params.append("t", a.caseTitle);
+        params.append("c", a.companyName ?? "");
       }
       if (result.confirmationEmailSent) params.set("mail", "1");
+      try {
+        sessionStorage.removeItem(draftKey(code));
+      } catch {
+        // nothing to clear
+      }
       router.push(`/r/${code}/complete?${params.toString()}`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "送信に失敗しました。");
@@ -84,16 +119,6 @@ export default function ApplyPage() {
             value={form.fullName}
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
             placeholder="例: 山田 花子"
-          />
-        </div>
-        <div>
-          <label className={labelClass}>生年月日</label>
-          <input
-            required
-            type="date"
-            className={inputBase}
-            value={form.birthDate}
-            onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
           />
         </div>
         <div>
@@ -176,11 +201,11 @@ export default function ApplyPage() {
             checked={form.agreedTerms}
             onChange={(e) => setForm({ ...form, agreedTerms: e.target.checked })}
           />
-          <Link href="/terms" target="_blank" className="font-bold text-primary underline">
+          <Link href="/terms" className="font-bold text-primary underline">
             利用規約
           </Link>
           および
-          <Link href="/privacy" target="_blank" className="font-bold text-primary underline">
+          <Link href="/privacy" className="font-bold text-primary underline">
             プライバシーポリシー
           </Link>
           に同意します

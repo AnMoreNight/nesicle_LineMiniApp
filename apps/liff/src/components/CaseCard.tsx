@@ -30,7 +30,7 @@ export function CaseCard({
         </label>
       )}
       <div className="flex flex-wrap gap-1.5">
-        <span className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary">{item.category}</span>
+        <span className="rounded-md bg-primary-soft px-2 py-0.5 text-sm font-bold text-primary-ink">{item.category}</span>
         <span className="rounded-md bg-surface-muted px-2 py-0.5 text-sm font-bold text-ink-muted">{item.area}</span>
       </div>
       <p className="mt-2 text-lg font-bold leading-snug">{item.title}</p>

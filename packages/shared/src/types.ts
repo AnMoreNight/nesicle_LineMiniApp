@@ -83,7 +83,8 @@ export interface BankAccountDto {
   accountHolder: string;
 }
 
-// 紹介された方(申込者)向けの案件情報。紹介者向けに書かれた「概要」と紹介者の報酬額は含めない。
+// 紹介された方(申込者)向けの案件情報。title/description は申込者向けの文面(landingTitle /
+// landingDescription、未入力なら汎用文面)。紹介者向けの文面・報酬・報酬条件は含めない。
 export interface ReferralLandingCaseDto {
   id: string;
   title: string;
@@ -91,8 +92,6 @@ export interface ReferralLandingCaseDto {
   area: string;
   companyName: string;
   description: string;
-  eligibilityNotes: string;
-  ineligibleNotes: string;
 }
 
 export interface ReferralLandingDto {
@@ -104,12 +103,11 @@ export interface ApplyResultDto {
   applicationCount: number;
   confirmationEmailSent: boolean;
   // 案件ごとに固有のお問い合わせ番号 (例: "OP-000123-1", "OP-000123-2")
-  applications: Array<{ inquiryNumber: string; caseTitle: string }>;
+  applications: Array<{ inquiryNumber: string; caseTitle: string; companyName: string }>;
 }
 
 export interface ApplyPayload {
   fullName: string;
-  birthDate: string;
   postalCode: string;
   address: string;
   phone: string;

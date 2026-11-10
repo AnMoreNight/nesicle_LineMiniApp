@@ -15,6 +15,8 @@ const caseSchema = z.object({
   rewardTimingNotes: z.string().max(1000).default(""),
   rewardLabel: z.string().min(1).max(60),
   rewardAmount: z.coerce.number().int().min(0),
+  landingTitle: z.string().max(100).default(""),
+  landingDescription: z.string().max(4000).default(""),
 });
 
 export default async function adminCasesRoutes(app: FastifyInstance) {

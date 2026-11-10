@@ -28,6 +28,8 @@ export function CaseForm({ companies, initial, submitLabel, onSubmit }: CaseForm
     rewardTimingNotes: initial?.rewardTimingNotes ?? "",
     rewardLabel: initial?.rewardLabel ?? "",
     rewardAmount: initial?.rewardAmount ?? 0,
+    landingTitle: initial?.landingTitle ?? "",
+    landingDescription: initial?.landingDescription ?? "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,7 +82,7 @@ export function CaseForm({ companies, initial, submitLabel, onSubmit }: CaseForm
         </Field>
       </div>
 
-      <Field label="案件タイトル">
+      <Field label="案件タイトル（紹介者向け）" hint="パートナーの案件一覧に表示されます（例: 引越し予定の知人を紹介して15,000円）">
         <Input required maxLength={100} value={values.title} onChange={(e) => set("title", e.target.value)} />
       </Field>
 
@@ -98,7 +100,7 @@ export function CaseForm({ companies, initial, submitLabel, onSubmit }: CaseForm
         />
       </Field>
 
-      <Field label="詳細説明">
+      <Field label="詳細説明（紹介者向け）">
         <Textarea
           required
           maxLength={4000}
@@ -128,11 +130,11 @@ export function CaseForm({ companies, initial, submitLabel, onSubmit }: CaseForm
         </Field>
       </div>
 
-      <Field label="対象条件" hint="任意">
+      <Field label="対象条件（紹介者向け）" hint="任意">
         <Textarea rows={3} maxLength={1000} value={values.eligibilityNotes} onChange={(e) => set("eligibilityNotes", e.target.value)} />
       </Field>
 
-      <Field label="対象外条件" hint="任意">
+      <Field label="対象外条件（紹介者向け）" hint="任意">
         <Textarea rows={3} maxLength={1000} value={values.ineligibleNotes} onChange={(e) => set("ineligibleNotes", e.target.value)} />
       </Field>
 
@@ -144,6 +146,30 @@ export function CaseForm({ companies, initial, submitLabel, onSubmit }: CaseForm
           onChange={(e) => set("rewardTimingNotes", e.target.value)}
         />
       </Field>
+
+      <fieldset className="space-y-4 rounded-lg border border-border p-4">
+        <legend className="px-1 text-sm font-semibold text-ink">紹介先（申込者）向けの表示</legend>
+        <p className="text-xs leading-relaxed text-ink-muted">
+          紹介URLを受け取った方が見る画面と、申込完了メールに表示されます。紹介者の報酬には触れず、サービスの内容や申し込むメリットを書いてください。
+        </p>
+        <Field label="サービス名" hint="未入力の場合は「掲載企業名のカテゴリサービス」と表示されます">
+          <Input
+            maxLength={100}
+            placeholder="例: お引越しの無料お見積もり"
+            value={values.landingTitle}
+            onChange={(e) => set("landingTitle", e.target.value)}
+          />
+        </Field>
+        <Field label="サービスの説明" hint="未入力の場合は汎用の案内文が表示されます">
+          <Textarea
+            rows={5}
+            maxLength={4000}
+            placeholder="例: 関西エリアのお引越しに対応。お見積もりは無料で、ご希望の日程に合わせてご提案します。"
+            value={values.landingDescription}
+            onChange={(e) => set("landingDescription", e.target.value)}
+          />
+        </Field>
+      </fieldset>
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 

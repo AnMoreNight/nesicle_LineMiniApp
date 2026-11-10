@@ -17,16 +17,22 @@ export function serializeCaseSummary(c: CaseWithCompany): CaseSummaryDto {
   };
 }
 
+// 申込者(紹介URLを受け取った方)に見せる案件名。案件の title は紹介者向け(「…を紹介して15,000円」
+// のように報酬を含む)なので使わず、未入力なら企業名とカテゴリから組み立てる。
+export function applicantFacingTitle(c: CaseWithCompany): string {
+  return c.landingTitle.trim() || `${c.company.name}の${c.category}サービス`;
+}
+
 export function serializeLandingCase(c: CaseWithCompany): ReferralLandingCaseDto {
   return {
     id: c.id,
-    title: c.title,
+    title: applicantFacingTitle(c),
     category: c.category,
     area: c.area,
     companyName: c.company.name,
-    description: c.description,
-    eligibilityNotes: c.eligibilityNotes,
-    ineligibleNotes: c.ineligibleNotes,
+    description:
+      c.landingDescription.trim() ||
+      `${c.company.name}がご提供するサービスです。お申し込み後、担当企業より詳しくご案内いたします。`,
   };
 }
 

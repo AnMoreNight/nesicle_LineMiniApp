@@ -52,6 +52,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [fetchMe]);
 
   useEffect(() => {
+    // 紹介URLを受け取った方(申込者)向けのページ(/r/...)はパートナーのログインを使わないため、
+    // LIFFの初期化もログイン確認も行わない(LINEのログイン後の戻り先はルート"/"なので影響しない)。
+    if (window.location.pathname.startsWith("/r/")) {
+      setLoading(false);
+      return;
+    }
     (async () => {
       try {
         // Runs on every page load, globally — see completeLiffLoginIfPossible's own comment

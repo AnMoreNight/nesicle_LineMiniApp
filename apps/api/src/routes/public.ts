@@ -2,14 +2,13 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "@nesicle/db";
 import { formatInquiryNumber, type ApplyResultDto, type ReferralLandingDto } from "@nesicle/shared";
-import { serializeLandingCase } from "../lib/serialize.js";
+import { applicantFacingTitle, serializeLandingCase } from "../lib/serialize.js";
 import { notifyReferrer } from "../lib/lineNotify.js";
 import { sendEmail } from "../lib/mailer.js";
 import { buildApplicationReceivedEmail } from "../lib/applicationEmail.js";
 
 const applySchema = z.object({
   fullName: z.string().min(1).max(60),
-  birthDate: z.string().min(1),
   postalCode: z.string().max(10).default(""),
   address: z.string().min(1).max(200),
   phone: z.string().min(1).max(30),
@@ -66,15 +65,9 @@ export default async function publicRoutes(app: FastifyInstance) {
       return reply.code(400).send({ error: "この紹介URLに含まれる案件を選択してください。" });
     }
 
-    const birthDate = new Date(parsed.data.birthDate);
-    if (Number.isNaN(birthDate.getTime())) {
-      return reply.code(400).send({ error: "生年月日の形式を確認してください。" });
-    }
-
     const applicant = await prisma.applicant.create({
       data: {
         fullName: parsed.data.fullName,
-        birthDate,
         postalCode: parsed.data.postalCode,
         address: parsed.data.address,
         phone: parsed.data.phone,
@@ -103,7 +96,7 @@ export default async function publicRoutes(app: FastifyInstance) {
 
     const items = selected.map((s) => ({
       inquiryNumber: formatInquiryNumber(applicant.inquiryNumber, s.seq),
-      title: s.case.title,
+      title: applicantFacingTitle(s.case),
       companyName: s.case.company.name,
     }));
     const email = buildApplicationReceivedEmail({
@@ -122,7 +115,11 @@ export default async function publicRoutes(app: FastifyInstance) {
     const result: ApplyResultDto = {
       applicationCount: selected.length,
       confirmationEmailSent,
-      applications: items.map((it) => ({ inquiryNumber: it.inquiryNumber, caseTitle: it.title })),
+      applications: items.map((it) => ({
+        inquiryNumber: it.inquiryNumber,
+        caseTitle: it.title,
+        companyName: it.companyName,
+      })),
     };
     return result;
   });

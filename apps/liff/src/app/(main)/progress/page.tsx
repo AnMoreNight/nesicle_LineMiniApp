@@ -109,7 +109,7 @@ export default function ProgressPage() {
                 </p>
 
                 {a.referrerReportedAt ? (
-                  <p className="mt-3 rounded-md bg-primary-soft px-2.5 py-1.5 text-center text-sm font-bold text-primary">
+                  <p className="mt-3 rounded-md bg-primary-soft px-2.5 py-1.5 text-center text-sm font-bold text-primary-ink">
                     完了報告済み ({new Date(a.referrerReportedAt).toLocaleDateString("ja-JP")})
                   </p>
                 ) : a.progressStatus !== "INELIGIBLE" && a.rewardStatus !== "PAID" ? (

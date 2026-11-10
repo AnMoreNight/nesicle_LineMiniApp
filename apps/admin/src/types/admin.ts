@@ -41,6 +41,8 @@ export interface CaseBase {
   rewardTimingNotes: string;
   rewardLabel: string;
   rewardAmount: number;
+  landingTitle: string;
+  landingDescription: string;
   status: CaseStatus;
   createdAt: string;
   updatedAt: string;
@@ -66,6 +68,8 @@ export interface CaseInput {
   rewardTimingNotes: string;
   rewardLabel: string;
   rewardAmount: number;
+  landingTitle: string;
+  landingDescription: string;
 }
 
 export interface CompanyInput {
@@ -120,7 +124,7 @@ export interface ApplicantBase {
   id: string;
   inquiryNumber: number;
   fullName: string;
-  birthDate: string;
+  birthDate: string | null;
   postalCode: string;
   address: string;
   phone: string;
