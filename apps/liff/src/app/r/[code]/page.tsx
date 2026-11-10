@@ -68,7 +68,7 @@ export default function ReferralLandingPage() {
   const count = data.cases.length;
 
   return (
-    <div className="min-h-dvh px-5 pb-28 pt-8">
+    <div className="min-h-viewport px-5 pb-28 pt-8">
       <p className="text-center text-xl font-extrabold">OPTAS</p>
 
       <section className="mt-5 rounded-lg bg-primary-soft px-4 py-5 text-center">

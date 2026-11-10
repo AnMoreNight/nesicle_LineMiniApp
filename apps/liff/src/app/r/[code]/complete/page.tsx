@@ -79,7 +79,7 @@ function CompleteContent() {
   const allAlreadyApplied = items.length > 0 && items.every((it) => it.alreadyApplied);
 
   return (
-    <div className="relative flex min-h-dvh flex-col items-center justify-center px-6 text-center">
+    <div className="relative flex min-h-viewport flex-col items-center justify-center px-6 text-center">
       <CloseButton />
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-soft text-success">
         <IconCheckCircle className="h-9 w-9" />

@@ -50,10 +50,17 @@ body {
 .app-viewport {
   max-width: 480px;
   margin: 0 auto;
+  min-height: 100vh; /* dvh 非対応のブラウザ(LINE PC版など)向けの代替 */
   min-height: 100dvh;
   background: var(--color-bg);
   position: relative;
   box-shadow: 0 0 60px rgba(20, 23, 31, 0.08);
+}
+
+/* 画面の高さいっぱい。dvh に対応していないブラウザ(LINE PC版など)では 100vh を使う */
+.min-h-viewport {
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 @supports (padding: max(0px)) {
