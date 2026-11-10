@@ -100,10 +100,21 @@ export interface ReferralLandingDto {
 }
 
 export interface ApplyResultDto {
+  // 今回新しく受け付けた申込の件数(すでに対応中だった案件は含まない)
   applicationCount: number;
   confirmationEmailSent: boolean;
-  // 案件ごとに固有のお問い合わせ番号 (例: "OP-000123-1", "OP-000123-2")
-  applications: Array<{ inquiryNumber: string; caseTitle: string; companyName: string }>;
+  // 案件ごとに固有のお問い合わせ番号 (例: "OP-000123-1", "OP-000123-2")。
+  // alreadyApplied: 同じ方が同じ案件にすでに申し込み済み(対応中)のため、新しい申込は作らず既存の番号を返したもの。
+  applications: Array<{ inquiryNumber: string; caseTitle: string; companyName: string; alreadyApplied?: boolean }>;
+}
+
+// この端末で以前に申し込んだ方の連絡先。申込フォームにあらかじめ入力するために使う。
+export interface ReturningApplicantDto {
+  fullName: string;
+  postalCode: string;
+  address: string;
+  phone: string;
+  email: string;
 }
 
 export interface ApplyPayload {

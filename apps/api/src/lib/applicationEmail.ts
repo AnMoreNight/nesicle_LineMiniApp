@@ -6,12 +6,19 @@ const receivedAtFormat = new Intl.DateTimeFormat("ja-JP", {
 
 export function buildApplicationReceivedEmail(params: {
   fullName: string;
-  items: Array<{ inquiryNumber: string; title: string; companyName: string }>;
+  // alreadyApplied: 以前のお申し込みが対応中のため、今回は新しい申込にしなかった案件
+  items: Array<{ inquiryNumber: string; title: string; companyName: string; alreadyApplied?: boolean }>;
   receivedAt: Date;
 }): { subject: string; text: string } {
-  const lines = params.items.map((it) => `・${it.inquiryNumber}  ${it.title}(${it.companyName})`).join("\n");
+  const lines = params.items
+    .map((it) => `・${it.inquiryNumber}  ${it.title}(${it.companyName})${it.alreadyApplied ? " ※お申し込み済み" : ""}`)
+    .join("\n");
+  const newItems = params.items.filter((it) => !it.alreadyApplied);
   const subjectSuffix =
-    params.items.length === 1 ? `お問い合わせ番号: ${params.items[0].inquiryNumber}` : `${params.items.length}件`;
+    newItems.length === 1 ? `お問い合わせ番号: ${newItems[0].inquiryNumber}` : `${newItems.length}件`;
+  const alreadyNote = params.items.some((it) => it.alreadyApplied)
+    ? ["※「お申し込み済み」のサービスは、以前のお申し込みを引き続き受け付けています。", ""]
+    : [];
   return {
     subject: `【OPTAS】お申し込みを受け付けました(${subjectSuffix})`,
     text: [
@@ -23,6 +30,7 @@ export function buildApplicationReceivedEmail(params: {
       "■ お問い合わせ番号 / お申し込み内容",
       lines,
       "",
+      ...alreadyNote,
       "■ 受付日時",
       receivedAtFormat.format(params.receivedAt),
       "",

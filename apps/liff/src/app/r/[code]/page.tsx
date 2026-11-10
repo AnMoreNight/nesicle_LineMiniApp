@@ -108,7 +108,8 @@ export default function ReferralLandingPage() {
 
       {/* 申込ボタンは常に画面下に表示し、長い説明を最後までスクロールしなくても申し込めるようにする。 */}
       <div className="safe-bottom fixed bottom-0 left-1/2 z-20 w-full max-w-[480px] -translate-x-1/2 border-t border-border bg-surface px-5 pt-3">
-        <button type="button" onClick={() => router.push(`/r/${code}/apply`)} className={clsx(btnPrimary, "mb-3 w-full")}>
+        {/* replace: 紹介ページ→申込→完了をブラウザの履歴1件のままにする(完了画面の×で閉じられるように) */}
+        <button type="button" onClick={() => router.replace(`/r/${code}/apply`)} className={clsx(btnPrimary, "mb-3 w-full")}>
           {count > 1 ? "サービスを選んで申し込む" : "このサービスに申し込む"}
         </button>
       </div>
