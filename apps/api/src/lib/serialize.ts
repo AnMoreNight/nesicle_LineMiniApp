@@ -23,6 +23,12 @@ export function applicantFacingTitle(c: CaseWithCompany): string {
   return c.landingTitle.trim() || `${c.company.name}の${c.category}サービス`;
 }
 
+// 提供会社のWebサイト。管理画面で「表示する」にした案件だけ返す(紹介者の案件詳細・紹介先の画面の両方で同じ設定)。
+function visibleProviderUrl(c: CaseWithCompany): string | null {
+  const url = c.providerUrl.trim();
+  return c.showProviderUrl && url ? url : null;
+}
+
 export function serializeLandingCase(c: CaseWithCompany): ReferralLandingCaseDto {
   return {
     id: c.id,
@@ -33,7 +39,7 @@ export function serializeLandingCase(c: CaseWithCompany): ReferralLandingCaseDto
     description:
       c.landingDescription.trim() ||
       `${c.company.name}がご提供するサービスです。お申し込み後、担当企業より詳しくご案内いたします。`,
-    providerUrl: c.showProviderUrl && c.providerUrl.trim() ? c.providerUrl.trim() : null,
+    providerUrl: visibleProviderUrl(c),
   };
 }
 
@@ -54,5 +60,6 @@ export function serializeCaseDetail(c: CaseWithCompany): CaseDetailDto {
     eligibilityNotes: c.eligibilityNotes,
     ineligibleNotes: c.ineligibleNotes,
     rewardTimingNotes: c.rewardTimingNotes,
+    providerUrl: visibleProviderUrl(c),
   };
 }

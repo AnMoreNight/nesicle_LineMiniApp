@@ -149,6 +149,37 @@ export function CaseForm({ companies, initial, submitLabel, onSubmit }: CaseForm
         />
       </Field>
 
+      <div className="space-y-2">
+        <Field label="提供会社のWebサイトURL" hint="任意。https:// から入力してください">
+          <Input
+            type="url"
+            maxLength={500}
+            placeholder="例: https://www.example.co.jp/"
+            value={values.providerUrl}
+            onChange={(e) => {
+              const url = e.target.value;
+              // URLを消したら表示もオフにする(空のリンクを出さない)
+              setValues((v) => ({ ...v, providerUrl: url, showProviderUrl: url.trim() ? v.showProviderUrl : false }));
+            }}
+          />
+        </Field>
+        <label className="flex items-start gap-2 text-sm text-ink">
+          <input
+            type="checkbox"
+            className="mt-0.5"
+            checked={values.showProviderUrl}
+            disabled={!values.providerUrl.trim()}
+            onChange={(e) => set("showProviderUrl", e.target.checked)}
+          />
+          <span>
+            アプリにWebサイトURLを表示する
+            <span className="block text-xs text-ink-muted">
+              紹介者の案件詳細と、紹介先（申込者）の画面に表示します。オフにすると、URLを登録したまま表示しません。
+            </span>
+          </span>
+        </label>
+      </div>
+
       <fieldset className="space-y-4 rounded-lg border border-border p-4">
         <legend className="px-1 text-sm font-semibold text-ink">紹介先（申込者）向けの表示</legend>
         <p className="text-xs leading-relaxed text-ink-muted">
@@ -171,34 +202,6 @@ export function CaseForm({ companies, initial, submitLabel, onSubmit }: CaseForm
             onChange={(e) => set("landingDescription", e.target.value)}
           />
         </Field>
-        <Field label="提供会社のWebサイトURL" hint="https:// から入力してください">
-          <Input
-            type="url"
-            maxLength={500}
-            placeholder="例: https://www.example.co.jp/"
-            value={values.providerUrl}
-            onChange={(e) => {
-              const url = e.target.value;
-              // URLを消したら表示もオフにする(空のリンクを出さない)
-              setValues((v) => ({ ...v, providerUrl: url, showProviderUrl: url.trim() ? v.showProviderUrl : false }));
-            }}
-          />
-        </Field>
-        <label className="flex items-start gap-2 text-sm text-ink">
-          <input
-            type="checkbox"
-            className="mt-0.5"
-            checked={values.showProviderUrl}
-            disabled={!values.providerUrl.trim()}
-            onChange={(e) => set("showProviderUrl", e.target.checked)}
-          />
-          <span>
-            紹介先の画面にWebサイトURLを表示する
-            <span className="block text-xs text-ink-muted">
-              オフにすると、URLを登録したまま紹介先の画面には表示しません。
-            </span>
-          </span>
-        </label>
       </fieldset>
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}

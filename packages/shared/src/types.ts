@@ -17,6 +17,8 @@ export interface CaseDetailDto extends CaseSummaryDto {
   eligibilityNotes: string;
   ineligibleNotes: string;
   rewardTimingNotes: string;
+  // 提供会社のWebサイト。管理画面で「表示する」にした案件だけ入る。
+  providerUrl: string | null;
 }
 
 // 紹介URLに含まれる案件。紹介メッセージ(紹介先向けのサービス名)と、取引条件の表示に使う項目を含む。

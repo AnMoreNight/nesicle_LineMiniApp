@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import type { ReferralLandingCaseDto, ReferralLandingDto } from "@nesicle/shared";
 import { PageSpinner } from "@/components/Spinner";
 import { EmptyState } from "@/components/EmptyState";
-import { IconExternal } from "@/components/icons";
+import { ExternalLink } from "@/components/ExternalLink";
 import { useApiGet } from "@/lib/useApiGet";
 import { btnPrimary, card } from "@/lib/ui";
 import clsx from "clsx";
@@ -52,15 +52,9 @@ function LandingCase({ c }: { c: ReferralLandingCaseDto }) {
       {c.providerUrl && (
         <div className="mt-3 border-t border-border pt-2.5">
           <p className="text-xs text-ink-muted">{c.companyName}のWebサイト</p>
-          <a
-            href={c.providerUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-0.5 inline-flex items-start gap-1 break-all text-sm font-bold text-primary underline"
-          >
+          <ExternalLink href={c.providerUrl} className="mt-0.5 text-sm">
             {c.providerUrl}
-            <IconExternal className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-          </a>
+          </ExternalLink>
         </div>
       )}
     </div>

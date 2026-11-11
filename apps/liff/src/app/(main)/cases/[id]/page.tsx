@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import type { CaseDetailDto } from "@nesicle/shared";
 import { PageHeader } from "@/components/PageHeader";
+import { ExternalLink } from "@/components/ExternalLink";
 import { MoneyText } from "@/components/MoneyText";
 import { PageSpinner } from "@/components/Spinner";
 import { useApiGet } from "@/lib/useApiGet";
@@ -33,7 +34,16 @@ export default function CaseDetailPage() {
           <span className="rounded-md bg-surface-muted px-2 py-0.5 text-sm font-bold text-ink-muted">{c.area}</span>
         </div>
         <h1 className="text-2xl font-extrabold leading-snug">{c.title}</h1>
-        <p className="text-sm text-ink-muted">掲載企業: {c.companyName}</p>
+        <div className="space-y-0.5 text-sm text-ink-muted">
+          <p>掲載企業: {c.companyName}</p>
+          {/* 管理画面で「表示する」にした案件だけ。紹介先の画面に出るURLと同じ。 */}
+          {c.providerUrl && (
+            <p className="flex items-start gap-1">
+              <span className="shrink-0">Webサイト:</span>
+              <ExternalLink href={c.providerUrl}>{c.providerUrl}</ExternalLink>
+            </p>
+          )}
+        </div>
 
         <div className={card}>
           <p className="text-sm text-ink-muted">紹介報酬</p>
