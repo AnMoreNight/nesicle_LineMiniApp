@@ -19,12 +19,22 @@ export interface CaseDetailDto extends CaseSummaryDto {
   rewardTimingNotes: string;
 }
 
+// 紹介URLに含まれる案件。紹介メッセージ(紹介先向けのサービス名)と、取引条件の表示に使う項目を含む。
+export interface ReferralLinkCaseDto extends CaseSummaryDto {
+  recipientTitle: string;
+  eligibilityNotes: string;
+  ineligibleNotes: string;
+  rewardTimingNotes: string;
+}
+
 export interface ReferralLinkDto {
   id: string;
   code: string;
   url: string;
   createdAt: string;
-  cases: CaseSummaryDto[];
+  cases: ReferralLinkCaseDto[];
+  // 取引条件に記載する紹介者(受託者)の名称。プロフィールの氏名、未登録ならLINEの表示名。
+  referrerName: string;
 }
 
 export interface ReferrerApplicationDto {
@@ -92,6 +102,8 @@ export interface ReferralLandingCaseDto {
   area: string;
   companyName: string;
   description: string;
+  // 提供会社のWebサイト。管理画面で「表示する」にした案件だけ入る。
+  providerUrl: string | null;
 }
 
 export interface ReferralLandingDto {

@@ -2,8 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "@nesicle/db";
 import { requireReferrer } from "../lib/auth.js";
-
-const TERMS_VERSION = "1.0";
+import { TERMS_VERSION } from "../lib/consent.js";
 
 const consentSchema = z.object({
   documentType: z.enum(["TERMS", "PRIVACY"]),

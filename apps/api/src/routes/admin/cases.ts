@@ -17,6 +17,13 @@ const caseSchema = z.object({
   rewardAmount: z.coerce.number().int().min(0),
   landingTitle: z.string().max(100).default(""),
   landingDescription: z.string().max(4000).default(""),
+  providerUrl: z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => v === "" || /^https?:\/\/\S+$/i.test(v), "WebサイトURLは http:// または https:// で始まる形で入力してください。")
+    .default(""),
+  showProviderUrl: z.boolean().default(false),
 });
 
 export default async function adminCasesRoutes(app: FastifyInstance) {

@@ -1,5 +1,5 @@
 import type { Case, Company } from "@nesicle/db";
-import type { CaseDetailDto, CaseSummaryDto, ReferralLandingCaseDto } from "@nesicle/shared";
+import type { CaseDetailDto, CaseSummaryDto, ReferralLandingCaseDto, ReferralLinkCaseDto } from "@nesicle/shared";
 
 type CaseWithCompany = Case & { company: Company };
 
@@ -33,6 +33,17 @@ export function serializeLandingCase(c: CaseWithCompany): ReferralLandingCaseDto
     description:
       c.landingDescription.trim() ||
       `${c.company.name}がご提供するサービスです。お申し込み後、担当企業より詳しくご案内いたします。`,
+    providerUrl: c.showProviderUrl && c.providerUrl.trim() ? c.providerUrl.trim() : null,
+  };
+}
+
+export function serializeReferralLinkCase(c: CaseWithCompany): ReferralLinkCaseDto {
+  return {
+    ...serializeCaseSummary(c),
+    recipientTitle: applicantFacingTitle(c),
+    eligibilityNotes: c.eligibilityNotes,
+    ineligibleNotes: c.ineligibleNotes,
+    rewardTimingNotes: c.rewardTimingNotes,
   };
 }
 

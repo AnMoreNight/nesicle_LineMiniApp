@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@nesicle/db";
 import { env } from "../env.js";
 import { requireReferrer } from "../lib/auth.js";
+import { hasAgreedToTerms } from "../lib/consent.js";
 import { REFERRER_COOKIE, cookieOptions, signReferrerToken } from "../lib/jwt.js";
 import { verifyLineIdToken } from "../lib/liffVerify.js";
 
@@ -90,6 +91,8 @@ export default async function authRoutes(app: FastifyInstance) {
       pictureUrl: user.pictureUrl,
       hasCompleteProfile: Boolean(user.referrerProfile?.fullName && user.referrerProfile?.phone),
       hasBankAccount: Boolean(user.referrerProfile?.bankAccount),
+      // 利用規約に同意するまでは、紹介URLの発行などを含むアプリの機能を使えない(同意画面へ案内する)
+      hasAgreedTerms: await hasAgreedToTerms(user.id),
     };
   });
 }

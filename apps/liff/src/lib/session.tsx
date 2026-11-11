@@ -12,6 +12,8 @@ export interface SessionUser {
   pictureUrl: string | null;
   hasCompleteProfile: boolean;
   hasBankAccount: boolean;
+  // 現在の利用規約に同意済みか。未同意なら同意画面(/agree)へ案内する。古いAPIは返さないため任意項目。
+  hasAgreedTerms?: boolean;
 }
 
 interface SessionContextValue {

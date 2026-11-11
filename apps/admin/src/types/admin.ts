@@ -43,6 +43,8 @@ export interface CaseBase {
   rewardAmount: number;
   landingTitle: string;
   landingDescription: string;
+  providerUrl: string;
+  showProviderUrl: boolean;
   status: CaseStatus;
   createdAt: string;
   updatedAt: string;
@@ -70,6 +72,8 @@ export interface CaseInput {
   rewardAmount: number;
   landingTitle: string;
   landingDescription: string;
+  providerUrl: string;
+  showProviderUrl: boolean;
 }
 
 export interface CompanyInput {

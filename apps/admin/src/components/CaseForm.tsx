@@ -30,6 +30,8 @@ export function CaseForm({ companies, initial, submitLabel, onSubmit }: CaseForm
     rewardAmount: initial?.rewardAmount ?? 0,
     landingTitle: initial?.landingTitle ?? "",
     landingDescription: initial?.landingDescription ?? "",
+    providerUrl: initial?.providerUrl ?? "",
+    showProviderUrl: initial?.showProviderUrl ?? false,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -169,6 +171,34 @@ export function CaseForm({ companies, initial, submitLabel, onSubmit }: CaseForm
             onChange={(e) => set("landingDescription", e.target.value)}
           />
         </Field>
+        <Field label="提供会社のWebサイトURL" hint="https:// から入力してください">
+          <Input
+            type="url"
+            maxLength={500}
+            placeholder="例: https://www.example.co.jp/"
+            value={values.providerUrl}
+            onChange={(e) => {
+              const url = e.target.value;
+              // URLを消したら表示もオフにする(空のリンクを出さない)
+              setValues((v) => ({ ...v, providerUrl: url, showProviderUrl: url.trim() ? v.showProviderUrl : false }));
+            }}
+          />
+        </Field>
+        <label className="flex items-start gap-2 text-sm text-ink">
+          <input
+            type="checkbox"
+            className="mt-0.5"
+            checked={values.showProviderUrl}
+            disabled={!values.providerUrl.trim()}
+            onChange={(e) => set("showProviderUrl", e.target.checked)}
+          />
+          <span>
+            紹介先の画面にWebサイトURLを表示する
+            <span className="block text-xs text-ink-muted">
+              オフにすると、URLを登録したまま紹介先の画面には表示しません。
+            </span>
+          </span>
+        </label>
       </fieldset>
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}

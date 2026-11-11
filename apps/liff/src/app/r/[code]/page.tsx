@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import type { ReferralLandingCaseDto, ReferralLandingDto } from "@nesicle/shared";
 import { PageSpinner } from "@/components/Spinner";
 import { EmptyState } from "@/components/EmptyState";
+import { IconExternal } from "@/components/icons";
 import { useApiGet } from "@/lib/useApiGet";
 import { btnPrimary, card } from "@/lib/ui";
 import clsx from "clsx";
@@ -44,6 +45,22 @@ function LandingCase({ c }: { c: ReferralLandingCaseDto }) {
               {expanded ? "閉じる" : "続きを読む"}
             </button>
           )}
+        </div>
+      )}
+
+      {/* 管理画面で「表示する」にした案件だけ。新しいタブで開き、この画面(申込の流れ)はそのまま残す。 */}
+      {c.providerUrl && (
+        <div className="mt-3 border-t border-border pt-2.5">
+          <p className="text-xs text-ink-muted">{c.companyName}のWebサイト</p>
+          <a
+            href={c.providerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-0.5 inline-flex items-start gap-1 break-all text-sm font-bold text-primary underline"
+          >
+            {c.providerUrl}
+            <IconExternal className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          </a>
         </div>
       )}
     </div>

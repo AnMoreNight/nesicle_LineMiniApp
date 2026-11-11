@@ -5,6 +5,7 @@ import type { ReferralLinkDto } from "@nesicle/shared";
 import { buildShareMessage, copyText, shareViaLine, shareViaSms } from "@/lib/share";
 import { btnLine, btnSecondary, card } from "@/lib/ui";
 import { IconCopy, IconTrash } from "./icons";
+import { TransactionTermsSheet } from "./TransactionTermsSheet";
 import clsx from "clsx";
 
 const iconBtn = "flex h-9 w-9 shrink-0 items-center justify-center rounded-md border transition active:scale-[.98]";
@@ -19,9 +20,11 @@ export function ShareLinkCard({
   onDelete?: () => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  // 紹介メッセージには紹介先向けのサービス名を使う(紹介者向けの案件名には報酬額が入っているため)
   const message = buildShareMessage(
     link.url,
-    link.cases.map((c) => c.title),
+    link.cases.map((c) => c.recipientTitle ?? `${c.companyName}のサービス`),
   );
 
   return (
@@ -78,7 +81,18 @@ export function ShareLinkCard({
           </button>
         )}
       </div>
-      <p className="mt-2 text-xs text-ink-muted">発行日: {new Date(link.createdAt).toLocaleDateString("ja-JP")}</p>
+      <div className="mt-2 flex items-center justify-between">
+        <p className="text-xs text-ink-muted">発行日: {new Date(link.createdAt).toLocaleDateString("ja-JP")}</p>
+        <button
+          type="button"
+          onClick={() => setShowTerms(true)}
+          aria-label="取引条件の詳細"
+          className="text-sm font-bold text-primary underline"
+        >
+          詳細
+        </button>
+      </div>
+      {showTerms && <TransactionTermsSheet link={link} onClose={() => setShowTerms(false)} />}
     </div>
   );
 }

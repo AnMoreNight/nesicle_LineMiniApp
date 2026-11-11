@@ -139,6 +139,9 @@ model Case {
   // (報酬額などを含む)なので、紹介先の画面・申込完了メールにはこちらを使う。空なら汎用文面。
   landingTitle       String    @default("")
   landingDescription String    @default("")
+  // 提供会社のWebサイトURL。紹介先の画面に出すかどうかは案件ごとに選べる(showProviderUrl)。
+  providerUrl        String    @default("")
+  showProviderUrl    Boolean   @default(false)
   status            CaseStatus @default(DRAFT)
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
