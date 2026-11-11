@@ -8,6 +8,7 @@ import { api, ApiError } from "@/lib/api";
 import { PageSpinner } from "@/components/Spinner";
 import { IconChevronRight } from "@/components/icons";
 import { btnPrimary, card } from "@/lib/ui";
+import { useViewedDocs, type LegalDoc } from "@/lib/viewedDocs";
 import clsx from "clsx";
 
 const TERMS_VERSION = "1.0";
@@ -18,6 +19,9 @@ export default function AgreePage() {
   const { user, loading, refresh } = useSession();
   const router = useRouter();
   const [checked, setChecked] = useState(false);
+  // 利用規約・プライバシーポリシーの両方を開くまで、同意のチェックはできない
+  const legal = useViewedDocs("agree-viewed");
+  const agreed = checked && legal.bothViewed;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,24 +56,41 @@ export default function AgreePage() {
       </p>
 
       <div className={clsx(card, "mt-6 divide-y divide-border !p-0")}>
-        <Link href="/terms" className="flex items-center justify-between px-4 py-3.5 text-base font-bold">
-          利用規約
-          <IconChevronRight className="h-4 w-4 text-ink-muted" />
-        </Link>
-        <Link href="/privacy" className="flex items-center justify-between px-4 py-3.5 text-base font-bold">
-          プライバシーポリシー
-          <IconChevronRight className="h-4 w-4 text-ink-muted" />
-        </Link>
+        {(
+          [
+            ["terms", "/terms", "利用規約"],
+            ["privacy", "/privacy", "プライバシーポリシー"],
+          ] as [LegalDoc, string, string][]
+        ).map(([doc, href, title]) => (
+          <Link
+            key={doc}
+            href={href}
+            onClick={() => legal.markViewed(doc)}
+            className="flex items-center justify-between px-4 py-3.5 text-base font-bold"
+          >
+            {title}
+            <span className="flex items-center gap-1.5">
+              {legal.viewed[doc] && <span className="text-xs font-bold text-success">確認済み</span>}
+              <IconChevronRight className="h-4 w-4 text-ink-muted" />
+            </span>
+          </Link>
+        ))}
       </div>
 
       <label className="mt-5 flex items-start gap-2 text-sm text-ink">
-        <input type="checkbox" className="mt-0.5" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
+        <input
+          type="checkbox"
+          className="mt-0.5 disabled:opacity-40"
+          checked={agreed}
+          disabled={!legal.bothViewed}
+          onChange={(e) => setChecked(e.target.checked)}
+        />
         利用規約およびプライバシーポリシーに同意します
       </label>
 
       {error && <p className="mt-3 text-sm font-bold text-danger">{error}</p>}
 
-      <button type="button" disabled={!checked || submitting} onClick={agree} className={clsx(btnPrimary, "mt-5 w-full")}>
+      <button type="button" disabled={!agreed || submitting} onClick={agree} className={clsx(btnPrimary, "mt-5 w-full")}>
         {submitting ? "送信中…" : "同意して利用を開始する"}
       </button>
     </div>

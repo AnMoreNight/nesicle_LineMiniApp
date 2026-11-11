@@ -6,6 +6,7 @@ import type { ApplyPayload, ApplyResultDto, ReferralLandingDto, ReturningApplica
 import { PageHeader } from "@/components/PageHeader";
 import { PageSpinner } from "@/components/Spinner";
 import { useApiGet } from "@/lib/useApiGet";
+import { useViewedDocs } from "@/lib/viewedDocs";
 import { api, ApiError } from "@/lib/api";
 import { btnPrimary, inputBase, label as labelClass } from "@/lib/ui";
 import clsx from "clsx";
@@ -46,6 +47,9 @@ export default function ApplyPage() {
   const [form, setForm] = useState<ApplyPayload>(initialDraft ?? EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 利用規約・プライバシーポリシーの両方を開くまで、同意のチェックはできない
+  const legal = useViewedDocs(`apply-viewed:${code}`);
+  const agreed = form.agreedTerms && legal.bothViewed;
   // この端末で以前に申し込んだ方の連絡先(APIが端末の目印Cookieから返す)。初回の方は null。
   const me = useApiGet<{ applicant: ReturningApplicantDto | null }>("/api/applicant/me");
   const [saved, setSaved] = useState<ReturningApplicantDto | null>(null);
@@ -135,6 +139,7 @@ export default function ApplyPage() {
       } catch {
         // nothing to clear
       }
+      legal.clear();
       // replace: 紹介ページ→申込→完了をブラウザの履歴1件のままにする。履歴が1件だけのタブは、
       // 完了画面の×ボタンでページ自身が閉じることをブラウザが許可するため(complete/page.tsx)。
       router.replace(`/r/${code}/complete?${params.toString()}`);
@@ -246,29 +251,46 @@ export default function ApplyPage() {
           </div>
         </div>
 
-        <label className="flex items-start gap-2 text-sm text-ink-muted">
-          <input
-            type="checkbox"
-            className="mt-0.5"
-            checked={form.agreedTerms}
-            onChange={(e) => setForm({ ...form, agreedTerms: e.target.checked })}
-          />
-          <span>
-            {/* 新しいタブで開く。このタブ(入力中のフォーム)はそのまま残り、履歴も増えないため完了画面の×で閉じられる。 */}
-            <a href="/terms" target="_blank" rel="noopener" className="font-bold text-primary underline">
-              利用規約
-            </a>
-            および
-            <a href="/privacy" target="_blank" rel="noopener" className="font-bold text-primary underline">
-              プライバシーポリシー
-            </a>
-            に同意します
-          </span>
-        </label>
+        <div>
+          <label className="flex items-start gap-2 text-sm text-ink-muted">
+            <input
+              type="checkbox"
+              className="mt-0.5 disabled:opacity-40"
+              checked={agreed}
+              disabled={!legal.bothViewed}
+              onChange={(e) => setForm({ ...form, agreedTerms: e.target.checked })}
+            />
+            <span>
+              {/* 新しいタブで開く。このタブ(入力中のフォーム)はそのまま残り、履歴も増えないため完了画面の×で閉じられる。 */}
+              <a
+                href="/terms"
+                target="_blank"
+                rel="noopener"
+                onClick={() => legal.markViewed("terms")}
+                onAuxClick={() => legal.markViewed("terms")}
+                className="font-bold text-primary underline"
+              >
+                利用規約
+              </a>
+              および
+              <a
+                href="/privacy"
+                target="_blank"
+                rel="noopener"
+                onClick={() => legal.markViewed("privacy")}
+                onAuxClick={() => legal.markViewed("privacy")}
+                className="font-bold text-primary underline"
+              >
+                プライバシーポリシー
+              </a>
+              に同意します
+            </span>
+          </label>
+        </div>
 
         {error && <p className="text-sm font-bold text-danger">{error}</p>}
 
-        <button type="submit" disabled={submitting || !form.agreedTerms} className={clsx(btnPrimary, "w-full")}>
+        <button type="submit" disabled={submitting || !agreed} className={clsx(btnPrimary, "w-full")}>
           {submitting ? "送信中…" : "この内容で申し込む"}
         </button>
       </form>
