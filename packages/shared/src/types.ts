@@ -129,6 +129,10 @@ export interface ReturningApplicantDto {
   address: string;
   phone: string;
   email: string;
+  // 現在の利用規約・プライバシーポリシーに、以前のお申し込みで同意済みか(同意済みなら再度のチェックは不要)
+  agreedTerms: boolean;
+  // すでに申し込み済み(対応中・成約済み)の案件。紹介ページ・申込フォームで「お申し込み済み」と表示し、選べなくする。
+  appliedCaseIds: string[];
 }
 
 export interface ApplyPayload {

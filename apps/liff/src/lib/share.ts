@@ -2,17 +2,18 @@
 // 紹介先向けのサービス名を並べて、内容を確認したくなる案内にする。
 const LISTED_SERVICES = 3;
 
+// 文面はクライアント指定のもの。サービスが1件ならサービス名だけ、複数なら「・」で並べる。
 export function buildShareMessage(url: string, serviceNames: string[]): string {
-  const listed = serviceNames.slice(0, LISTED_SERVICES).map((name) => `・${name}`);
-  const rest = serviceNames.length - listed.length;
+  const shown = serviceNames.slice(0, LISTED_SERVICES);
+  const listed = shown.length === 1 && serviceNames.length === 1 ? shown : shown.map((name) => `・${name}`);
+  const rest = serviceNames.length - shown.length;
   return [
     "おすすめのサービスをご紹介します。",
     "",
     ...listed,
     ...(rest > 0 ? [`ほか${rest}件`] : []),
     "",
-    "サービスの内容は、こちらからご確認いただけます。",
-    "気になるサービスがあれば、そのままお申し込みいただけます。",
+    "サービスの詳細は、以下のリンクからご確認ください。ご希望に合えば、そのままお申し込みいただけます。",
     url,
   ].join("\n");
 }

@@ -14,8 +14,15 @@ export function normalizePhone(phone: string): string {
   return s.startsWith("+81") ? `0${digits.slice(2)}` : digits;
 }
 
-/** 対応中(まだ成約・対象外になっていない)の申込。同じ案件に再度申し込まれても新しい申込は作らない。 */
-const IN_PROGRESS: readonly string[] = ["APPLIED", "INTERVIEWING"];
+/**
+ * 「申し込み済み」とみなす申込(対応中・成約済み)。同じ案件に再度申し込まれても新しい申込は作らず、
+ * 紹介ページ・申込フォームでも選べなくする。対象外(INELIGIBLE)になった案件は、もう一度申し込める。
+ */
+const ACTIVE: readonly string[] = ["APPLIED", "INTERVIEWING", "CONTRACTED"];
+
+export function isActiveApplication(progressStatus: string): boolean {
+  return ACTIVE.includes(progressStatus);
+}
 
 export interface ExistingApplication {
   caseId: string;
@@ -24,13 +31,13 @@ export interface ExistingApplication {
 }
 
 /**
- * 選ばれた案件ごとに、同じ案件の対応中の申込があればそれを使い(alreadyApplied: true、番号も既存のまま)、
+ * 選ばれた案件ごとに、同じ案件の申し込み済み(対応中・成約済み)の申込があればそれを使い(alreadyApplied: true、番号も既存のまま)、
  * なければ新しい申込として次の連番を振る。連番はこの申込者の既存の最大値の続きから。
  */
 export function planApplications<C extends { id: string }>(cases: C[], existing: ExistingApplication[]) {
   const inProgress = new Map<string, number>();
   for (const a of existing) {
-    if (IN_PROGRESS.includes(a.progressStatus)) inProgress.set(a.caseId, a.inquirySeq);
+    if (isActiveApplication(a.progressStatus)) inProgress.set(a.caseId, a.inquirySeq);
   }
   let nextSeq = existing.reduce((max, a) => Math.max(max, a.inquirySeq), 0) + 1;
   return cases.map((c) => {

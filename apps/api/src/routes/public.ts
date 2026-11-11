@@ -11,8 +11,9 @@ import { applicantFacingTitle, serializeLandingCase } from "../lib/serialize.js"
 import { notifyReferrer } from "../lib/lineNotify.js";
 import { sendEmail } from "../lib/mailer.js";
 import { buildApplicationReceivedEmail } from "../lib/applicationEmail.js";
-import { normalizeEmail, normalizePhone, planApplications } from "../lib/applicantIdentity.js";
+import { isActiveApplication, normalizeEmail, normalizePhone, planApplications } from "../lib/applicantIdentity.js";
 import { clearApplicantCookie, readApplicantCookie, setApplicantCookie } from "../lib/applicantCookie.js";
+import { TERMS_VERSION, applicantHasAgreed } from "../lib/consent.js";
 
 const WITH_APPLICATIONS = {
   applications: { select: { caseId: true, inquirySeq: true, progressStatus: true } },
@@ -60,12 +61,21 @@ export default async function publicRoutes(app: FastifyInstance) {
     return dto;
   });
 
-  // この端末で以前に申し込んだ方の連絡先(申込フォームの入力補完用)。目印のCookieがなければ null。
+  // この端末で以前に申し込んだ方(目印のCookieがなければ null)。申込フォームの入力補完と、
+  // 同意済みの規約・申し込み済みの案件をもう一度求めないために使う。
   app.get("/api/applicant/me", async (request) => {
     const id = readApplicantCookie(request);
-    const a = id ? await prisma.applicant.findUnique({ where: { id } }) : null;
+    const a = id ? await prisma.applicant.findUnique({ where: { id }, include: WITH_APPLICATIONS }) : null;
     const applicant: ReturningApplicantDto | null = a
-      ? { fullName: a.fullName, postalCode: a.postalCode, address: a.address, phone: a.phone, email: a.email }
+      ? {
+          fullName: a.fullName,
+          postalCode: a.postalCode,
+          address: a.address,
+          phone: a.phone,
+          email: a.email,
+          agreedTerms: await applicantHasAgreed(a.id),
+          appliedCaseIds: [...new Set(a.applications.filter((x) => isActiveApplication(x.progressStatus)).map((x) => x.caseId))],
+        }
       : null;
     return { applicant };
   });
@@ -160,9 +170,22 @@ export default async function publicRoutes(app: FastifyInstance) {
             },
           });
 
-      await tx.consentRecord.create({
-        data: { subjectType: "APPLICANT", subjectId: applicant.id, documentType: "TERMS", version: "1.0" },
+      // 同意の記録(利用規約・プライバシーポリシー)。以前のお申し込みで同じ版に同意済みなら追加しない。
+      const agreedBefore = await tx.consentRecord.findMany({
+        where: { subjectType: "APPLICANT", subjectId: applicant.id, version: TERMS_VERSION },
+        select: { documentType: true },
       });
+      const missing = (["TERMS", "PRIVACY"] as const).filter((d) => !agreedBefore.some((r) => r.documentType === d));
+      if (missing.length > 0) {
+        await tx.consentRecord.createMany({
+          data: missing.map((documentType) => ({
+            subjectType: "APPLICANT" as const,
+            subjectId: applicant.id,
+            documentType,
+            version: TERMS_VERSION,
+          })),
+        });
+      }
 
       const toCreate = planned.filter((p) => !p.alreadyApplied);
       if (toCreate.length > 0) {
