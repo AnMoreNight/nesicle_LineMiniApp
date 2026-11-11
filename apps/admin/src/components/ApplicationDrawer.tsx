@@ -103,6 +103,23 @@ export function ApplicationDrawer({ application, onClose, onUpdated }: Applicati
             }
           />
           <Row
+            label="紹介URL"
+            value={
+              application.referralLink.url ? (
+                <a
+                  href={application.referralLink.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="break-all text-primary hover:underline"
+                >
+                  {application.referralLink.url}
+                </a>
+              ) : (
+                application.referralLink.code
+              )
+            }
+          />
+          <Row
             label="申込者"
             value={
               <Link href={`/applicants/${application.applicant.id}`} className="text-primary hover:underline">

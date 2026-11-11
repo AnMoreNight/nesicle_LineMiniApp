@@ -71,7 +71,7 @@ export default function ApplicantDetailPage() {
               <thead>
                 <tr className="border-b border-border bg-surface-muted text-left text-ink-muted">
                   <th className="px-4 py-3 font-medium">案件</th>
-                  <th className="px-4 py-3 font-medium">紹介者</th>
+                  <th className="px-4 py-3 font-medium">紹介者・紹介URL</th>
                   <th className="px-4 py-3 font-medium">進捗</th>
                   <th className="px-4 py-3 font-medium">報酬状況</th>
                   <th className="px-4 py-3 font-medium">報酬額</th>
@@ -93,6 +93,7 @@ export default function ApplicantDetailPage() {
                       >
                         {a.referralLink.referrer.displayName}
                       </Link>
+                      <div className="whitespace-nowrap tabular-nums text-ink-muted">{a.referralLink.code}</div>
                     </td>
                     <td className="px-4 py-3">
                       <ProgressStatusBadge status={a.progressStatus} />

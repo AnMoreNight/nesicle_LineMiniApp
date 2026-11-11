@@ -124,7 +124,7 @@ export default function ApplicationsPage() {
           <option value="no">完了報告なし</option>
         </Select>
         <Input
-          placeholder="申込者名・お問い合わせ番号で検索"
+          placeholder="申込者名・お問い合わせ番号・紹介URLで検索"
           value={qInput}
           onChange={(e) => setQInput(e.target.value)}
           className="w-52"
@@ -143,7 +143,7 @@ export default function ApplicationsPage() {
                 <th className="px-4 py-3 font-medium">お問い合わせ番号</th>
                 <th className="px-4 py-3 font-medium">申込者</th>
                 <th className="px-4 py-3 font-medium">案件</th>
-                <th className="px-4 py-3 font-medium">紹介者</th>
+                <th className="px-4 py-3 font-medium">紹介者・紹介URL</th>
                 <th className="px-4 py-3 font-medium">進捗</th>
                 <th className="px-4 py-3 font-medium">報酬状況</th>
                 <th className="px-4 py-3 font-medium">報酬額</th>
@@ -172,7 +172,10 @@ export default function ApplicationsPage() {
                     <div>{a.case.title}</div>
                     <div className="text-ink-muted">{a.case.company.name}</div>
                   </td>
-                  <td className="px-4 py-3">{a.referralLink.referrer.displayName}</td>
+                  <td className="px-4 py-3">
+                    <div>{a.referralLink.referrer.displayName}</div>
+                    <div className="whitespace-nowrap tabular-nums text-ink-muted">{a.referralLink.code}</div>
+                  </td>
                   <td className="px-4 py-3">
                     <ProgressStatusBadge status={a.progressStatus} />
                   </td>

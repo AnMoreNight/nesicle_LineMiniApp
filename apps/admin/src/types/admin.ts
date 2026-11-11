@@ -195,7 +195,8 @@ export interface ApplicantDetail extends ApplicantBase {
 export interface ApplicationListItem extends ApplicationBase {
   applicant: ApplicantBase;
   case: CaseWithCompany;
-  referralLink: ReferralLinkBase & { referrer: UserBase };
+  // url: どの紹介URLからの申込か(紹介者に発行した紹介URL)。古いAPIは返さないことがある。
+  referralLink: ReferralLinkBase & { referrer: UserBase; url?: string };
 }
 
 export interface AdminStats {

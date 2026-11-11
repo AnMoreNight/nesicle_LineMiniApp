@@ -29,7 +29,9 @@ export async function shareViaLine(url: string, message: string) {
   } catch {
     // Not running inside the LINE app / LIFF not initialized — fall back to the web share plugin.
   }
-  const shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(message)}`;
+  // LINEの共有ページは url を本文の後ろに自動で付けるため、本文の末尾のURLは外す(付けたままだとURLが2回並ぶ)
+  const text = message.endsWith(url) ? message.slice(0, -url.length).trimEnd() : message;
+  const shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
   window.open(shareUrl, "_blank", "noopener,noreferrer");
 }
 

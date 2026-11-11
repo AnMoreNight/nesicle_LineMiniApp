@@ -5,6 +5,7 @@ import { formatInquiryNumber, parseInquiryNumber } from "@nesicle/shared";
 import { requireAdmin } from "../../lib/auth.js";
 import { toCsv } from "../../lib/csv.js";
 import { notifyReferrer } from "../../lib/lineNotify.js";
+import { env } from "../../env.js";
 
 const querySchema = z.object({
   progressStatus: z.enum(["APPLIED", "INTERVIEWING", "CONTRACTED", "INELIGIBLE"]).optional(),
@@ -20,8 +21,11 @@ const querySchema = z.object({
 
 // 検索欄は申込者名に加え、お問い合わせ番号でも引ける。"OP-000123-2" はその1件、
 // "OP-000123" は同じ申込(まとめて申し込んだ全案件)を返す。
+// 紹介URLのコード("PT-XXXXXX"、紹介URLの末尾)でも、その紹介URLからの申込を引ける。
 function searchWhere(q: string): Prisma.ApplicationWhereInput {
   const byName: Prisma.ApplicationWhereInput = { applicant: { fullName: { contains: q, mode: "insensitive" } } };
+  const code = q.trim().match(/(PT-[A-Z0-9]+)[/]?$/i)?.[1];
+  if (code) return { OR: [byName, { referralLink: { code: code.toUpperCase() } }] };
   const n = parseInquiryNumber(q);
   if (!n) return byName;
   const byNumber: Prisma.ApplicationWhereInput = {
@@ -49,6 +53,14 @@ const includeForList = {
   referralLink: { include: { referrer: true } },
 } satisfies Prisma.ApplicationInclude;
 
+type ApplicationForList = Prisma.ApplicationGetPayload<{ include: typeof includeForList }>;
+
+// どの紹介URLからの申込かを管理画面で確認できるよう、紹介URLそのもの(紹介者に発行したURL)を付ける
+const referralUrl = (code: string) => `${env.publicLiffAppUrl}/r/${code}`;
+function withReferralUrl(a: ApplicationForList) {
+  return { ...a, referralLink: { ...a.referralLink, url: referralUrl(a.referralLink.code) } };
+}
+
 const updateSchema = z.object({
   progressStatus: z.enum(["APPLIED", "INTERVIEWING", "CONTRACTED", "INELIGIBLE"]).optional(),
   rewardStatus: z.enum(["UNCONFIRMED", "CONFIRMED", "PAID"]).optional(),
@@ -62,11 +74,12 @@ export default async function adminApplicationsRoutes(app: FastifyInstance) {
 
   app.get("/api/admin/applications", async (request) => {
     const query = querySchema.parse(request.query);
-    return prisma.application.findMany({
+    const applications = await prisma.application.findMany({
       where: buildWhere(query),
       include: includeForList,
       orderBy: { createdAt: "desc" },
     });
+    return applications.map(withReferralUrl);
   });
 
   app.get("/api/admin/applications/export.csv", async (request, reply) => {
@@ -77,7 +90,7 @@ export default async function adminApplicationsRoutes(app: FastifyInstance) {
       orderBy: { createdAt: "desc" },
     });
     const csv = toCsv(
-      ["お問い合わせ番号", "申込ID", "申込者", "案件", "掲載企業", "紹介者", "進捗状況", "成果/報酬状況", "報酬額", "対象外理由", "完了報告日時", "申込日", "更新日"],
+      ["お問い合わせ番号", "申込ID", "申込者", "案件", "掲載企業", "紹介者", "紹介URL", "進捗状況", "成果/報酬状況", "報酬額", "対象外理由", "完了報告日時", "申込日", "更新日"],
       applications.map((a) => [
         formatInquiryNumber(a.applicant.inquiryNumber, a.inquirySeq),
         a.id,
@@ -85,6 +98,7 @@ export default async function adminApplicationsRoutes(app: FastifyInstance) {
         a.case.title,
         a.case.company.name,
         a.referralLink.referrer.displayName,
+        referralUrl(a.referralLink.code),
         a.progressStatus,
         a.rewardStatus,
         a.rewardAmount ?? "",
@@ -103,7 +117,7 @@ export default async function adminApplicationsRoutes(app: FastifyInstance) {
     const { id } = request.params as { id: string };
     const application = await prisma.application.findUnique({ where: { id }, include: includeForList });
     if (!application) return reply.code(404).send({ error: "申込が見つかりません。" });
-    return application;
+    return withReferralUrl(application);
   });
 
   app.patch("/api/admin/applications/:id", async (request, reply) => {
@@ -150,6 +164,6 @@ export default async function adminApplicationsRoutes(app: FastifyInstance) {
       await notifyReferrer(referrerId, `「${title}」の報酬が確定しました。${reportHint}`);
     }
 
-    return application;
+    return withReferralUrl(application);
   });
 }

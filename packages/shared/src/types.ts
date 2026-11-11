@@ -135,13 +135,19 @@ export interface ReturningApplicantDto {
   appliedCaseIds: string[];
 }
 
-export interface ApplyPayload {
+// 申込者の登録(初回のみ)。連絡先と、利用規約・プライバシーポリシーへの同意。
+// 登録するとこの端末に目印のCookieが付き、以降は紹介ページから直接申し込める。
+export interface RegisterApplicantPayload {
   fullName: string;
   postalCode: string;
   address: string;
   phone: string;
   email: string;
-  notes: string;
-  caseIds: string[];
   agreedTerms: boolean;
+}
+
+// 登録済みの方の申込(紹介ページから)。申込者はCookieで判別する。
+export interface ApplyPayload {
+  caseIds: string[];
+  notes?: string;
 }

@@ -10,8 +10,8 @@ export function PageHeader({
 }: {
   title: string;
   onBack?: () => void;
-  // 利用規約・プライバシーポリシー用: 申込フォームから新しいタブで開かれた(戻る先の履歴がない)場合は、
-  // 戻るボタンでそのタブを閉じて申込フォームのタブに戻る。
+  // 利用規約・プライバシーポリシー用: 登録画面から新しいタブで開かれた(戻る先の履歴がない)場合は、
+  // 戻るボタンでそのタブを閉じて登録画面のタブに戻る。
   closeIfNoHistory?: boolean;
 }) {
   const router = useRouter();
@@ -20,7 +20,7 @@ export function PageHeader({
     if (onBack) return onBack();
     if (closeIfNoHistory && window.history.length <= 1) {
       window.close();
-      // 閉じられなかった場合(アプリ内ブラウザ等)は、このページを開いた元のページ(申込フォーム)へ戻る
+      // 閉じられなかった場合(アプリ内ブラウザ等)は、このページを開いた元のページ(登録画面)へ戻る
       window.setTimeout(() => {
         if (document.visibilityState !== "visible") return;
         const from = document.referrer;
