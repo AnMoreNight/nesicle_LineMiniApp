@@ -5,10 +5,26 @@ import type { Liff } from "@line/liff";
 import { IconExternal } from "./icons";
 import clsx from "clsx";
 
-// 外部サイト(提供会社のWebサイトなど)へのリンク。今の画面は残したまま開く。
+// 外部サイト(提供会社のWebサイト、利用規約・プライバシーポリシーなど)へのリンク。今の画面は残したまま開く。
 // - LINEミニアプリ(LIFFブラウザ)内: liff.openWindow でLINE内ブラウザを重ねて開く(LINEが案内している方法)
 // - それ以外のブラウザ: 新しいタブで開く
-export function ExternalLink({ href, className, children }: { href: string; className?: string; children: ReactNode }) {
+export function ExternalLink({
+  href,
+  className,
+  children,
+  onOpen,
+  icon = true,
+  unstyled = false,
+}: {
+  href: string;
+  className?: string;
+  children: ReactNode;
+  // 開いたとき(例: 利用規約を開いたことの記録)
+  onOpen?: () => void;
+  icon?: boolean;
+  // true: 既定の見た目(緑の下線つき文字)を付けず、className だけを使う
+  unstyled?: boolean;
+}) {
   // クリックの処理中に読み込むとブラウザがポップアップ扱いにすることがあるため、先に読み込んでおく
   const liffRef = useRef<Liff | null>(null);
   useEffect(() => {
@@ -20,6 +36,7 @@ export function ExternalLink({ href, className, children }: { href: string; clas
   }, []);
 
   function handleClick(e: MouseEvent<HTMLAnchorElement>) {
+    onOpen?.();
     const liff = liffRef.current;
     // liff.id は liff.init() 後にだけ入る(openWindow は初期化後でないと使えない)
     if (!liff?.isInClient() || !liff.id) return;
@@ -37,10 +54,11 @@ export function ExternalLink({ href, className, children }: { href: string; clas
       target="_blank"
       rel="noopener noreferrer"
       onClick={handleClick}
-      className={clsx("inline-flex items-start gap-1 break-all font-bold text-primary underline", className)}
+      onAuxClick={onOpen}
+      className={clsx(!unstyled && "inline-flex items-start gap-1 break-all font-bold text-primary underline", className)}
     >
       {children}
-      <IconExternal className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+      {icon && <IconExternal className="mt-0.5 h-3.5 w-3.5 shrink-0" />}
     </a>
   );
 }

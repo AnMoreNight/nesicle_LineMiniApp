@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "@nesicle/db";
-import { requireReferrer } from "../lib/auth.js";
+import { requireAgreedReferrer } from "../lib/auth.js";
 
 const profileSchema = z.object({
   fullName: z.string().min(1).max(60),
@@ -20,7 +20,7 @@ const bankAccountSchema = z.object({
 });
 
 export default async function profileRoutes(app: FastifyInstance) {
-  app.get("/api/me/profile", { preHandler: requireReferrer }, async (request) => {
+  app.get("/api/me/profile", { preHandler: requireAgreedReferrer }, async (request) => {
     const profile = await prisma.referrerProfile.upsert({
       where: { userId: request.referrerUserId },
       update: {},
@@ -37,7 +37,7 @@ export default async function profileRoutes(app: FastifyInstance) {
     };
   });
 
-  app.put("/api/me/profile", { preHandler: requireReferrer }, async (request, reply) => {
+  app.put("/api/me/profile", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const parsed = profileSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: parsed.error.issues[0]?.message ?? "入力内容を確認してください。" });
@@ -50,7 +50,7 @@ export default async function profileRoutes(app: FastifyInstance) {
     return { ok: true };
   });
 
-  app.get("/api/me/bank-account", { preHandler: requireReferrer }, async (request, reply) => {
+  app.get("/api/me/bank-account", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const profile = await prisma.referrerProfile.findUnique({
       where: { userId: request.referrerUserId },
       include: { bankAccount: true },
@@ -61,7 +61,7 @@ export default async function profileRoutes(app: FastifyInstance) {
     return profile.bankAccount;
   });
 
-  app.put("/api/me/bank-account", { preHandler: requireReferrer }, async (request, reply) => {
+  app.put("/api/me/bank-account", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const parsed = bankAccountSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: parsed.error.issues[0]?.message ?? "入力内容を確認してください。" });

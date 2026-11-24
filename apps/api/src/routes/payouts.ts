@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "@nesicle/db";
 import type { PayoutRequestDto } from "@nesicle/shared";
-import { requireReferrer } from "../lib/auth.js";
+import { requireAgreedReferrer } from "../lib/auth.js";
 import { payoutEligibleWhere } from "../lib/payoutEligibility.js";
 
 class ClaimConflictError extends Error {}
@@ -27,7 +27,7 @@ function toDto(p: {
 }
 
 export default async function payoutsRoutes(app: FastifyInstance) {
-  app.get("/api/me/payout-requests", { preHandler: requireReferrer }, async (request) => {
+  app.get("/api/me/payout-requests", { preHandler: requireAgreedReferrer }, async (request) => {
     const requests = await prisma.payoutRequest.findMany({
       where: { userId: request.referrerUserId },
       include: { applications: { include: { case: true } } },
@@ -36,7 +36,7 @@ export default async function payoutsRoutes(app: FastifyInstance) {
     return requests.map(toDto);
   });
 
-  app.post("/api/me/payout-requests", { preHandler: requireReferrer }, async (request, reply) => {
+  app.post("/api/me/payout-requests", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const profile = await prisma.referrerProfile.findUnique({
       where: { userId: request.referrerUserId },
       include: { bankAccount: true },

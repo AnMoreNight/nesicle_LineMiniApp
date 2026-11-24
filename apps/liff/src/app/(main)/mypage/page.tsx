@@ -6,6 +6,8 @@ import type { BankAccountDto, ReferrerProfileDto } from "@nesicle/shared";
 import { BANK_ACCOUNT_TYPE_LABEL_JA } from "@nesicle/shared";
 import { TopBar } from "@/components/TopBar";
 import { IconChevronRight } from "@/components/icons";
+import { ExternalLink } from "@/components/ExternalLink";
+import { LEGAL_URLS } from "@/lib/legal";
 import { useApiGet } from "@/lib/useApiGet";
 import { useSession } from "@/lib/session";
 import { card } from "@/lib/ui";
@@ -55,9 +57,13 @@ export default function MyPage() {
               同意画面へ
             </Link>
           )}
-          <div className="mt-3 flex gap-4 border-t border-border pt-3 text-sm font-bold text-primary">
-            <Link href="/terms">利用規約を見る</Link>
-            <Link href="/privacy">プライバシーポリシーを見る</Link>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-3 text-sm">
+            <ExternalLink href={LEGAL_URLS.terms} unstyled className="inline-flex items-start gap-1 font-bold text-primary">
+              利用規約を見る
+            </ExternalLink>
+            <ExternalLink href={LEGAL_URLS.privacy} unstyled className="inline-flex items-start gap-1 font-bold text-primary">
+              プライバシーポリシーを見る
+            </ExternalLink>
           </div>
         </div>
 

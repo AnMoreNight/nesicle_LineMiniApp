@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "@nesicle/db";
-import { requireReferrer } from "../lib/auth.js";
+import { requireAgreedReferrer } from "../lib/auth.js";
 import { serializeCaseSummary } from "../lib/serialize.js";
 
 const addSchema = z.object({
@@ -22,11 +22,11 @@ async function loadSelection(userId: string) {
 }
 
 export default async function selectionRoutes(app: FastifyInstance) {
-  app.get("/api/me/selection", { preHandler: requireReferrer }, async (request) => {
+  app.get("/api/me/selection", { preHandler: requireAgreedReferrer }, async (request) => {
     return loadSelection(request.referrerUserId);
   });
 
-  app.post("/api/me/selection", { preHandler: requireReferrer }, async (request, reply) => {
+  app.post("/api/me/selection", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const parsed = addSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: "入力内容を確認してください。" });
@@ -43,7 +43,7 @@ export default async function selectionRoutes(app: FastifyInstance) {
     return loadSelection(request.referrerUserId);
   });
 
-  app.delete("/api/me/selection/:caseId", { preHandler: requireReferrer }, async (request) => {
+  app.delete("/api/me/selection/:caseId", { preHandler: requireAgreedReferrer }, async (request) => {
     const { caseId } = request.params as { caseId: string };
     await prisma.referralSelection.deleteMany({ where: { userId: request.referrerUserId, caseId } });
     return loadSelection(request.referrerUserId);
@@ -52,7 +52,7 @@ export default async function selectionRoutes(app: FastifyInstance) {
   // Deletes exactly the given case ids from the user's selection (the "削除" button on the
   // /refer page acts on whichever cases are currently checked there — checking itself is
   // local-only and never synced, so this is the only thing that removes rows from the DB).
-  app.delete("/api/me/selection", { preHandler: requireReferrer }, async (request, reply) => {
+  app.delete("/api/me/selection", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const parsed = bulkDeleteSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: "入力内容を確認してください。" });

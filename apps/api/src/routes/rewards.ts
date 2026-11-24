@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "@nesicle/db";
 import type { RewardsSummaryDto } from "@nesicle/shared";
-import { requireReferrer } from "../lib/auth.js";
+import { requireAgreedReferrer } from "../lib/auth.js";
 import { isPayoutEligible } from "../lib/payoutEligibility.js";
 
 export default async function rewardsRoutes(app: FastifyInstance) {
-  app.get("/api/me/rewards", { preHandler: requireReferrer }, async (request) => {
+  app.get("/api/me/rewards", { preHandler: requireAgreedReferrer }, async (request) => {
     const applications = await prisma.application.findMany({
       where: { referralLink: { referrerId: request.referrerUserId } },
       include: { case: true },

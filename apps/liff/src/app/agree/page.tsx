@@ -1,20 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/session";
 import { api, ApiError } from "@/lib/api";
 import { PageSpinner } from "@/components/Spinner";
-import { IconChevronRight } from "@/components/icons";
+import { ExternalLink } from "@/components/ExternalLink";
+import { IconExternal } from "@/components/icons";
 import { btnPrimary, card } from "@/lib/ui";
 import { useViewedDocs, type LegalDoc } from "@/lib/viewedDocs";
+import { LEGAL_URLS } from "@/lib/legal";
 import clsx from "clsx";
 
-const TERMS_VERSION = "1.0";
-
 // 利用規約・プライバシーポリシーへの同意画面。同意するまでは、紹介URLの発行・コピーを含む
-// アプリの機能は使えない((main)/layout.tsx がここへ案内し、APIも未同意の発行を断る)。
+// アプリの機能は使えない((main)/layout.tsx がここへ案内し、APIも同意前の利用を断る: requireAgreedReferrer)。
 export default function AgreePage() {
   const { user, loading, refresh } = useSession();
   const router = useRouter();
@@ -35,8 +34,9 @@ export default function AgreePage() {
     setSubmitting(true);
     setError(null);
     try {
-      await api.post("/api/me/consent", { documentType: "TERMS", version: TERMS_VERSION });
-      await api.post("/api/me/consent", { documentType: "PRIVACY", version: TERMS_VERSION });
+      // 版はサーバーが現在の版で記録する
+      await api.post("/api/me/consent", { documentType: "TERMS" });
+      await api.post("/api/me/consent", { documentType: "PRIVACY" });
       await refresh();
       router.replace("/");
     } catch (err) {
@@ -58,22 +58,25 @@ export default function AgreePage() {
       <div className={clsx(card, "mt-6 divide-y divide-border !p-0")}>
         {(
           [
-            ["terms", "/terms", "利用規約"],
-            ["privacy", "/privacy", "プライバシーポリシー"],
+            ["terms", LEGAL_URLS.terms, "利用規約"],
+            ["privacy", LEGAL_URLS.privacy, "プライバシーポリシー"],
           ] as [LegalDoc, string, string][]
         ).map(([doc, href, title]) => (
-          <Link
+          // 運営会社のWebサイトの正式版を、この画面を残したまま開く
+          <ExternalLink
             key={doc}
             href={href}
-            onClick={() => legal.markViewed(doc)}
+            onOpen={() => legal.markViewed(doc)}
+            unstyled
+            icon={false}
             className="flex items-center justify-between px-4 py-3.5 text-base font-bold"
           >
             {title}
             <span className="flex items-center gap-1.5">
               {legal.viewed[doc] && <span className="text-xs font-bold text-success">確認済み</span>}
-              <IconChevronRight className="h-4 w-4 text-ink-muted" />
+              <IconExternal className="h-4 w-4 text-ink-muted" />
             </span>
-          </Link>
+          </ExternalLink>
         ))}
       </div>
 

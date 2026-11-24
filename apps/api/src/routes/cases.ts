@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "@nesicle/db";
-import { requireReferrer } from "../lib/auth.js";
+import { requireAgreedReferrer } from "../lib/auth.js";
 import { serializeCaseDetail, serializeCaseSummary } from "../lib/serialize.js";
 
 export default async function casesRoutes(app: FastifyInstance) {
-  app.get("/api/cases", { preHandler: requireReferrer }, async () => {
+  app.get("/api/cases", { preHandler: requireAgreedReferrer }, async () => {
     const cases = await prisma.case.findMany({
       where: { status: "PUBLISHED" },
       include: { company: true },
@@ -13,7 +13,7 @@ export default async function casesRoutes(app: FastifyInstance) {
     return cases.map(serializeCaseSummary);
   });
 
-  app.get("/api/cases/:id", { preHandler: requireReferrer }, async (request, reply) => {
+  app.get("/api/cases/:id", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const c = await prisma.case.findFirst({
       where: { id, status: "PUBLISHED" },

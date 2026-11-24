@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "@nesicle/db";
 import type { ReferrerApplicationDto } from "@nesicle/shared";
-import { requireReferrer } from "../lib/auth.js";
+import { requireAgreedReferrer } from "../lib/auth.js";
 
 function toDto(a: {
   id: string;
@@ -30,7 +30,7 @@ function toDto(a: {
 }
 
 export default async function applicationsRoutes(app: FastifyInstance) {
-  app.get("/api/me/applications", { preHandler: requireReferrer }, async (request) => {
+  app.get("/api/me/applications", { preHandler: requireAgreedReferrer }, async (request) => {
     const applications = await prisma.application.findMany({
       where: { referralLink: { referrerId: request.referrerUserId } },
       include: { applicant: true, case: true },
@@ -42,7 +42,7 @@ export default async function applicationsRoutes(app: FastifyInstance) {
   // パートナー(紹介者)がワンタッチで行う「完了報告」。成果が出たはずだという自己申告であり、
   // これ自体は報酬確定を意味しない — 運営が掲載企業へ成果確認を行うきっかけとなるシグナル。
   // そのため運営が契約成立を反映する前(申込・面談中)から報告できる必要がある。
-  app.post("/api/me/applications/:id/report", { preHandler: requireReferrer }, async (request, reply) => {
+  app.post("/api/me/applications/:id/report", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const application = await prisma.application.findUnique({
       where: { id },

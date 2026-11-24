@@ -6,6 +6,8 @@ import type { RegisterApplicantPayload, ReturningApplicantDto } from "@nesicle/s
 import { PageHeader } from "@/components/PageHeader";
 import { PageSpinner } from "@/components/Spinner";
 import { IconCheckCircle } from "@/components/icons";
+import { ExternalLink } from "@/components/ExternalLink";
+import { LEGAL_URLS } from "@/lib/legal";
 import { useApiGet } from "@/lib/useApiGet";
 import { useViewedDocs } from "@/lib/viewedDocs";
 import { markJustRegistered } from "@/lib/referralFlow";
@@ -209,13 +211,13 @@ export default function RegisterPage() {
           <p className="flex items-start gap-2 text-sm text-ink-muted">
             <IconCheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-success" />
             <span>
-              <a href="/terms" target="_blank" rel="noopener" className="font-bold text-primary underline">
+              <ExternalLink href={LEGAL_URLS.terms} unstyled icon={false} className="font-bold text-primary underline">
                 利用規約
-              </a>
+              </ExternalLink>
               および
-              <a href="/privacy" target="_blank" rel="noopener" className="font-bold text-primary underline">
+              <ExternalLink href={LEGAL_URLS.privacy} unstyled icon={false} className="font-bold text-primary underline">
                 プライバシーポリシー
-              </a>
+              </ExternalLink>
               には、同意いただいています。
             </span>
           </p>
@@ -229,28 +231,27 @@ export default function RegisterPage() {
               onChange={(e) => setChecked(e.target.checked)}
             />
             <span>
-              {/* 新しいタブで開く。このタブ(入力中のフォーム)はそのまま残り、履歴も増えないため完了画面の×で閉じられる。 */}
-              <a
-                href="/terms"
-                target="_blank"
-                rel="noopener"
-                onClick={() => legal.markViewed("terms")}
-                onAuxClick={() => legal.markViewed("terms")}
+              {/* 運営会社のWebサイトの正式版を新しいタブで開く。このタブ(入力中のフォーム)はそのまま残り、
+                  履歴も増えないため完了画面の×で閉じられる。 */}
+              <ExternalLink
+                href={LEGAL_URLS.terms}
+                onOpen={() => legal.markViewed("terms")}
+                unstyled
+                icon={false}
                 className="font-bold text-primary underline"
               >
                 利用規約
-              </a>
+              </ExternalLink>
               および
-              <a
-                href="/privacy"
-                target="_blank"
-                rel="noopener"
-                onClick={() => legal.markViewed("privacy")}
-                onAuxClick={() => legal.markViewed("privacy")}
+              <ExternalLink
+                href={LEGAL_URLS.privacy}
+                onOpen={() => legal.markViewed("privacy")}
+                unstyled
+                icon={false}
                 className="font-bold text-primary underline"
               >
                 プライバシーポリシー
-              </a>
+              </ExternalLink>
               に同意します
             </span>
           </label>

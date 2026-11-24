@@ -4,8 +4,7 @@ import { prisma } from "@nesicle/db";
 import { generateReferralCode } from "@nesicle/shared";
 import type { ReferralLinkDto } from "@nesicle/shared";
 import { env } from "../env.js";
-import { requireReferrer } from "../lib/auth.js";
-import { hasAgreedToTerms } from "../lib/consent.js";
+import { requireAgreedReferrer } from "../lib/auth.js";
 import { serializeReferralLinkCase } from "../lib/serialize.js";
 
 const createSchema = z.object({
@@ -47,14 +46,10 @@ async function referrerNameOf(userId: string): Promise<string> {
 }
 
 export default async function referralLinksRoutes(app: FastifyInstance) {
-  app.post("/api/referral-links", { preHandler: requireReferrer }, async (request, reply) => {
+  app.post("/api/referral-links", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const parsed = createSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: parsed.error.issues[0]?.message ?? "入力内容を確認してください。" });
-    }
-    // 利用規約に同意する前は紹介URLを発行できない(顧問弁護士の指摘による同意フロー)
-    if (!(await hasAgreedToTerms(request.referrerUserId))) {
-      return reply.code(403).send({ error: "紹介URLを発行するには、利用規約への同意が必要です。" });
     }
     const cases = await prisma.case.findMany({
       where: { id: { in: parsed.data.caseIds }, status: "PUBLISHED" },
@@ -82,7 +77,7 @@ export default async function referralLinksRoutes(app: FastifyInstance) {
     return toDto({ ...link, cases: link.cases.map((rc) => ({ case: rc.case })) }, await referrerNameOf(request.referrerUserId));
   });
 
-  app.get("/api/me/referral-links", { preHandler: requireReferrer }, async (request) => {
+  app.get("/api/me/referral-links", { preHandler: requireAgreedReferrer }, async (request) => {
     const links = await prisma.referralLink.findMany({
       where: { referrerId: request.referrerUserId },
       include: { cases: { include: { case: { include: { company: true } } } } },
@@ -92,7 +87,7 @@ export default async function referralLinksRoutes(app: FastifyInstance) {
     return links.map((link) => toDto({ ...link, cases: link.cases.map((rc) => ({ case: rc.case })) }, referrerName));
   });
 
-  app.delete("/api/me/referral-links/:id", { preHandler: requireReferrer }, async (request, reply) => {
+  app.delete("/api/me/referral-links/:id", { preHandler: requireAgreedReferrer }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const link = await prisma.referralLink.findFirst({
       where: { id, referrerId: request.referrerUserId },
