@@ -1,7 +1,9 @@
 import { api } from "./api";
+import { currentLiffId } from "./liffId";
 
 export async function initLiff() {
-  const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
+  // 本番用・審査用・開発用のどれとして開かれたかで、LIFF IDが変わる(liffId.ts)
+  const liffId = currentLiffId();
   if (!liffId) return null;
   const liffModule = await import("@line/liff");
   const liff = liffModule.default;
@@ -20,8 +22,7 @@ export async function initLiff() {
  * it only does anything if the LIFF SDK reports we're already logged in.
  */
 export async function completeLiffLoginIfPossible(): Promise<boolean> {
-  const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
-  if (!liffId) return false;
+  if (!currentLiffId()) return false;
 
   const liff = await initLiff();
   if (!liff || !liff.isLoggedIn()) return false;

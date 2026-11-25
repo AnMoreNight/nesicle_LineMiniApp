@@ -56,11 +56,11 @@ export default async function authRoutes(app: FastifyInstance) {
     if (!parsed.success) {
       return reply.code(400).send({ error: "入力内容を確認してください。", issues: parsed.error.issues });
     }
-    if (!env.lineLoginChannelId) {
+    if (env.lineLoginChannelIds.length === 0) {
       return reply.code(503).send({ error: "LINEログインが設定されていません。" });
     }
     try {
-      const profile = await verifyLineIdToken(parsed.data.idToken, env.lineLoginChannelId);
+      const profile = await verifyLineIdToken(parsed.data.idToken, env.lineLoginChannelIds);
       const user = await upsertReferrerUser(
         profile.sub,
         parsed.data.displayName ?? profile.name ?? "LINEユーザー",

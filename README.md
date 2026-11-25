@@ -47,9 +47,10 @@ npm run dev                   # api(:4000) / liff(:3000) / admin(:3011) を同�
 
 現状はLIFFチャンネルが未発行のため、`ALLOW_DEV_LOGIN=true` の開発用ログインで代替しています。本番のLIFFチャンネルを発行したら:
 
-1. `apps/liff/.env.local` の `NEXT_PUBLIC_LIFF_ID` に発行されたLIFF IDを設定
-2. `apps/api/.env` の `LINE_LOGIN_CHANNEL_ID` にLINEログインチャンネルIDを設定
-3. `apps/api/.env` の `ALLOW_DEV_LOGIN` を `false` に変更
+1. `apps/liff/.env.local` の `NEXT_PUBLIC_LIFF_ID` に本番用のLIFF IDを、`NEXT_PUBLIC_LIFF_ID_REVIEW`・`NEXT_PUBLIC_LIFF_ID_DEV` に審査用・開発用のLIFF IDを設定
+2. LINE Developers の［ウェブアプリ設定］で、審査用のエンドポイントURLの末尾に `?env=review`、開発用に `?env=dev` を付ける(本番用はそのまま)
+3. `apps/api/.env` の `LINE_LOGIN_CHANNEL_ID` に、本番用・審査用・開発用のチャネルIDをカンマ区切りで設定
+4. `apps/api/.env` の `ALLOW_DEV_LOGIN` を `false` に変更
 
 これにより `apps/liff` は自動的に実際のLINEログイン(`liff.login()` → `POST /api/auth/liff-login`)を使うようになります。コード変更は不要です。
 

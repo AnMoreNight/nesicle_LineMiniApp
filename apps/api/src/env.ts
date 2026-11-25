@@ -14,7 +14,12 @@ export const env = {
   jwtSecret: required("JWT_SECRET", "dev-only-change-me-referrer-jwt-secret"),
   adminJwtSecret: required("ADMIN_JWT_SECRET", "dev-only-change-me-admin-jwt-secret"),
   allowDevLogin: process.env.ALLOW_DEV_LOGIN === "true",
-  lineLoginChannelId: process.env.LINE_LOGIN_CHANNEL_ID ?? "",
+  // LINEログインのIDトークンを受け付けるチャネルID。LINEミニアプリは内部チャネル(本番用・審査用・開発用)ごとに
+  // チャネルIDが異なるため、カンマ区切りで複数指定できる(例: "2012395295,2012395294,2012395293")。
+  lineLoginChannelIds: (process.env.LINE_LOGIN_CHANNEL_ID ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
   // LINE Messaging API (LINEログインとは別チャネル。ステータス変更のプッシュ通知用)。
   // 未設定の間は notifyReferrer が黙ってno-opする — クライアントがチャネルを用意し次第、
   // 環境変数を設定するだけで動き出す。
