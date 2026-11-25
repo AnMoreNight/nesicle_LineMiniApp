@@ -7,6 +7,7 @@ import { BANK_ACCOUNT_TYPE_LABEL_JA } from "@nesicle/shared";
 import { TopBar } from "@/components/TopBar";
 import { IconChevronRight } from "@/components/icons";
 import { ExternalLink } from "@/components/ExternalLink";
+import { OperatorInfo } from "@/components/OperatorInfo";
 import { LEGAL_URLS } from "@/lib/legal";
 import { useApiGet } from "@/lib/useApiGet";
 import { useSession } from "@/lib/session";
@@ -77,6 +78,8 @@ export default function MyPage() {
         >
           ログアウト
         </button>
+
+        <OperatorInfo className="pt-2" />
       </main>
     </div>
   );

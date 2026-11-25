@@ -1,7 +1,8 @@
 import { prisma, type Prisma } from "@nesicle/db";
 
 // 現在の利用規約のバージョン。規約を改定したら上げる(未同意扱いになり、再度の同意が必要になる)。
-export const TERMS_VERSION = "1.0";
+// 2.0: optas.co.jp の正式版(2026年11月10日制定)。1.0(β版の暫定版)に同意した方にも、改めて同意をお願いする。
+export const TERMS_VERSION = "2.0";
 
 type ConsentDb = Pick<Prisma.TransactionClient, "consentRecord">;
 

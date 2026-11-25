@@ -11,6 +11,7 @@ import type {
 import { PageSpinner } from "@/components/Spinner";
 import { EmptyState } from "@/components/EmptyState";
 import { ExternalLink } from "@/components/ExternalLink";
+import { OperatorInfo } from "@/components/OperatorInfo";
 import { IconCheckCircle } from "@/components/icons";
 import { useApiGet } from "@/lib/useApiGet";
 import { api, ApiError } from "@/lib/api";
@@ -213,6 +214,11 @@ function ConfirmSheet({
             />
           </div>
 
+          {/* 個人情報を誰に・何を・いつ提供するかを、申し込む前に示す(LINEミニアプリのポリシー) */}
+          <p className="text-xs leading-relaxed text-ink-muted">
+            お申し込み後、ご登録のご連絡先(お名前・ご住所・電話番号・メールアドレス)と希望内容を、上記サービスの提供企業にお伝えします。企業からご連絡するために使われます。
+          </p>
+
           {error && <p className="text-sm font-bold text-danger">{error}</p>}
 
           <button type="button" onClick={submit} disabled={submitting} className={clsx(btnPrimary, "w-full")}>
@@ -343,6 +349,8 @@ export default function ReferralLandingPage() {
       <p className="mt-6 rounded-md bg-surface-muted px-3 py-2.5 text-sm leading-relaxed text-ink-muted">
         ご入力いただく個人情報は、紹介者(OPTAS パートナー)には共有されません。内容をご確認のうえ、ご自身でお申し込みください。
       </p>
+
+      <OperatorInfo className="mt-6" />
 
       {/* 申込ボタンは常に画面下に表示し、長い説明を最後までスクロールしなくても申し込めるようにする。 */}
       <div className="safe-bottom fixed bottom-0 left-1/2 z-20 w-full max-w-[480px] -translate-x-1/2 border-t border-border bg-surface px-5 pt-3">

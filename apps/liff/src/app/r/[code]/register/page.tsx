@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { PageSpinner } from "@/components/Spinner";
 import { IconCheckCircle } from "@/components/icons";
 import { ExternalLink } from "@/components/ExternalLink";
+import { OperatorInfo } from "@/components/OperatorInfo";
 import { LEGAL_URLS } from "@/lib/legal";
 import { useApiGet } from "@/lib/useApiGet";
 import { useViewedDocs } from "@/lib/viewedDocs";
@@ -263,6 +264,8 @@ export default function RegisterPage() {
           {submitting ? "送信中…" : editing ? "変更を保存してお申し込みへ戻る" : "登録してお申し込みへ進む"}
         </button>
       </form>
+
+      <OperatorInfo className="mt-2 px-5" />
     </div>
   );
 }

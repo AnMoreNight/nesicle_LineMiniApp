@@ -3,6 +3,7 @@
 import { Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { IconCheckCircle, IconClose } from "@/components/icons";
+import { OperatorInfo } from "@/components/OperatorInfo";
 
 // LINEのトークのリンクから開く「LINE内ブラウザ」か(LIFFブラウザ=LINEミニアプリとは別物)。
 // LINE内ブラウザのUser-Agentには "Line/バージョン" が入り、LIFFブラウザにはさらに "LIFF" が入る。
@@ -134,6 +135,7 @@ function CompleteContent() {
           </p>
         </div>
       )}
+      <OperatorInfo className="mt-6" />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { useSession } from "@/lib/session";
 import { api, ApiError } from "@/lib/api";
 import { initLiff } from "@/lib/liff";
 import { PageSpinner } from "@/components/Spinner";
+import { OperatorInfo } from "@/components/OperatorInfo";
 import { btnLine, btnPrimary, inputBase, label as labelClass } from "@/lib/ui";
 import clsx from "clsx";
 
@@ -112,6 +113,8 @@ export default function LoginPage() {
           </button>
         </div>
       )}
+
+      <OperatorInfo className="mt-10" />
     </div>
   );
 }

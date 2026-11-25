@@ -7,6 +7,7 @@ import { api, ApiError } from "@/lib/api";
 import { PageSpinner } from "@/components/Spinner";
 import { ExternalLink } from "@/components/ExternalLink";
 import { IconExternal } from "@/components/icons";
+import { OperatorInfo } from "@/components/OperatorInfo";
 import { btnPrimary, card } from "@/lib/ui";
 import { useViewedDocs, type LegalDoc } from "@/lib/viewedDocs";
 import { LEGAL_URLS } from "@/lib/legal";
@@ -96,6 +97,8 @@ export default function AgreePage() {
       <button type="button" disabled={!agreed || submitting} onClick={agree} className={clsx(btnPrimary, "mt-5 w-full")}>
         {submitting ? "送信中…" : "同意して利用を開始する"}
       </button>
+
+      <OperatorInfo className="mt-8" />
     </div>
   );
 }
